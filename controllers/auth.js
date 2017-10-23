@@ -1,6 +1,8 @@
 const jwt = require('jwt-simple');
-const User = require('../models/user');
+const UserModels = require('../models/user');
 const config = require('../config');
+const User = UserModels.user;
+const Traveler = UserModels.traveler;
 
 function tokenForUser(user) {
     // sub => Subject, iat => Issue at time
@@ -9,14 +11,23 @@ function tokenForUser(user) {
 }
 
 exports.signin = (req, res, next) => {
-    // User has already had theor email and password auth'd
+    // User has already had their email and password auth'd
     // We just need to give them a token
     res.send({ token: tokenForUser(req.user) });
 };
 
 exports.signup = (req, res, next) => {
+    const firstname = req.body.firstname;
+    const lastname = req.body.lastname;
+    const username = req.body.username;
+    const address1 = req.body.address1;
+    const address2 = req.body.address2;
+    const city = req.body.city;
+    const country = req.body.country;
+    const zip = req.body.zip;
     const email = req.body.email;
     const password = req.body.password;
+    const userTypeId = req.body.userTypeId;
 
     if(!email || !password) {
         return res.status(422).json({ error: 'You must provide email and password' });
@@ -35,11 +46,20 @@ exports.signup = (req, res, next) => {
 
         // If a user with email !exist, create and save user record
         const user = new User({
-            email: email,
-            password: password
+            username,
+            firstname,
+            lastname,
+            email,
+            password,
+            mailingAddress1: address1,
+            mailingAddress2: address2,
+            mailingCity: city,
+            mailingZip: zip,
+            mailingCountry: country,
+            userTypeId
         });
 
-        user.save((err) => {
+        user.save((err, user) => {
             if (err) { return next(err); }
 
             // Respond to request indicating success
