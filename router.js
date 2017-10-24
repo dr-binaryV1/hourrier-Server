@@ -16,11 +16,11 @@ module.exports = function (app) {
     });
 
     app.get('/shoppingcart', Order.cart);
-
+    app.post('/shoppingcart', Order.addItem);
+    app.post('/shoppingcartitem', Order.getItem);
+    app.delete('/shoppingcartitem', Order.removeItem);
     app.post('/search', Scraper.scrape);
-
     app.post('/signin', requireSignin, Auth.signin);
-
     app.post('/signup', Auth.signup);
 
     app.post('/usertype', (req, res, next) => {
