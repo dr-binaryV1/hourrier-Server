@@ -1,7 +1,9 @@
 const jwt = require('jwt-simple');
 const UserModels = require('../models/user');
+const OrderModels = require('../models/order');
 const config = require('../config');
 const User = UserModels.user;
+const Cart = OrderModels.cart;
 const Traveler = UserModels.traveler;
 
 function tokenForUser(user) {
@@ -13,7 +15,7 @@ function tokenForUser(user) {
 exports.signin = (req, res, next) => {
     // User has already had their email and password auth'd
     // We just need to give them a token
-    res.send({ token: tokenForUser(req.user) });
+    res.send({ token: tokenForUser(req.user), user: req.user });
 };
 
 exports.signup = (req, res, next) => {
@@ -61,9 +63,16 @@ exports.signup = (req, res, next) => {
 
         user.save((err, user) => {
             if (err) { return next(err); }
+            const cart = new Cart({
+                userId: user._id,
+                itemIds: []
+            });
 
-            // Respond to request indicating success
-            res.json({ token: tokenForUser(user) });
+            cart.save((err, cart) => {
+                if(err) { return next(err); }
+                // Respond to request indicating success
+                res.json({ token: tokenForUser(user), user: user });
+            });
         });
     });
 };

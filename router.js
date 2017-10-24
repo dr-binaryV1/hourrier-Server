@@ -1,5 +1,6 @@
 const Auth = require('./controllers/auth');
 const UserModels = require('./models/user');
+const Order = require('./controllers/order');
 const Scraper = require('./controllers/scraper');
 const passportService = require('./services/passport');
 const passport = require('passport');
@@ -14,7 +15,9 @@ module.exports = function (app) {
         res.send({ message: 'Super secret code is ABC123'});
     });
 
-    app.post('/scrape', Scraper.scrape);
+    app.get('/shoppingcart', Order.cart);
+
+    app.post('/search', Scraper.scrape);
 
     app.post('/signin', requireSignin, Auth.signin);
 

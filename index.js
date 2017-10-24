@@ -12,7 +12,13 @@ mongoose.connect('mongodb://localhost:hourrier');
 
 app.use(morgan('combined'));
 app.use(bodyParser.json({ type: '*/*'}));
-app.use(cors());
+
+var corsOptions = {
+  origin: '*',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204 
+}
+
+app.use(cors(corsOptions));
 router(app);
 
 const port = process.env.PORT || 3090;
