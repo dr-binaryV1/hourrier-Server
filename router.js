@@ -17,6 +17,7 @@ module.exports = function (app) {
 
     app.get('/shoppingcart', Order.cart);
     app.post('/shoppingcart', Order.addItem);
+    app.post('/shoppingcart/check', Order.checkItem);
     app.post('/shoppingcartitem', Order.getItem);
     app.delete('/shoppingcartitem', Order.removeItem);
     app.post('/search', Scraper.scrape);

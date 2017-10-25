@@ -42,6 +42,21 @@ exports.getItem = (req, res, next) => {
   });
 };
 
+exports.checkItem = (req, res, next) => {
+  Cart.findOne({"userId": req.get('user')}, null, (err, cartItems) => {
+    if(err) { return next(err); }
+    
+    Item.find({"_id": cartItems.itemIds.map(id => {return id})}, null, (err, items) => {
+      if(err) { return next(err); }
+      let filteredItems = items.filter(item => {
+        return item.name === req.body.itemName
+      });
+
+      filteredItems.length > 0 ? res.json({ itemFound: true }) : res.json({ itemFound: false });
+    });
+  });
+}
+
 exports.removeItem = (req, res, next) => {
   Cart.findOne({"userId": req.get('user')}, null, (err, cart) => {
     if(err) { return next(err); }
