@@ -20,6 +20,7 @@ module.exports = function (app) {
     app.post('/shoppingcart/check', Order.checkItem);
     app.post('/shoppingcartitem', Order.getItem);
     app.delete('/shoppingcartitem', Order.removeItem);
+    app.post('/checkout', Order.checkout);
     app.post('/search', Scraper.scrape);
     app.post('/signin', requireSignin, Auth.signin);
     app.post('/signup', Auth.signup);

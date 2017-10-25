@@ -2,6 +2,8 @@ const OrderModels = require('../models/order');
 const Cart = OrderModels.cart;
 const Item = OrderModels.item;
 const Product = OrderModels.item;
+const OrderItems = OrderModels.orderItems;
+const Order = OrderModels.order;
 
 exports.cart = (req, res, next) => {
   Cart.findOne({"userId": req.get('user')}, null, (err, cart) => {
@@ -73,6 +75,33 @@ exports.removeItem = (req, res, next) => {
         Item.find({}, null, (err, items) => {
           if(err) { return next(err); }
           res.json(items);
+        });
+      });
+    });
+  });
+};
+
+exports.checkout = (req, res, next) => {
+  const orderItems = new OrderItems({
+    itemIds: req.body.itemIds
+  });
+
+  orderItems.save((err, items) => {
+    if(err) { return next(err); }
+
+    const order = new Order({
+      buyerId: req.get('user'),
+      orderItemsId: items._id
+    });
+
+    order.save((err, order) => {
+      if(err) { return next(err); }
+
+      Cart.findOne({"userId": req.get('user')}, null, (err, cart) => {
+        cart.itemIds = [];
+        cart.save((err, cart) => {
+          if(err) { return next(err); }
+          res.json({ orderSaved: true });
         });
       });
     });
