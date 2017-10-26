@@ -12,6 +12,7 @@ const userSchema = new Schema({
     mailingCountry: { type: String, required: true },
     mailingZip: { type: String, default: "00000"},
     userTypeId: { type: String, required: true },
+    intineraryIds: [{type: String}],
     email: { type: String, unique: true, required: true, lowercase: true },
     password: { type: String, required: true }
 });
@@ -22,12 +23,22 @@ const typeSchema = new Schema({
 
 const travelerSchema = new Schema({
   userId: { type: String, required: true, unique: true },
+  passportPhone: { type: String },
   shippingAddress1: { type: String, required: true },
   shippingAddress2: { type: String },
   shippingCity: { type: String, required: true },
   shippingState: { type: String, required: true },
   shippingCountry: { type: String, required: true },
   shippingZip: { type: String, required: true }
+});
+
+const travelItinerarySchema = new Schema({
+    departureCity: { type: String, required: true },
+    departureDate: { type: Date, required: true },
+    departureTime: { type: String, required: true },
+    arrivalCity: { type: String, required: true },
+    arrivalDate: { type: Date, required: true },
+    arrivalTime: { type: String, required: true }
 });
 
 // On Save Hook, encrypt password
@@ -57,7 +68,9 @@ userSchema.methods.comparePassword = function(candidatePassword, callback) {
 const user_model = mongoose.model('user', userSchema);
 const user_type_model = mongoose.model('userType', typeSchema);
 const traveler_model = mongoose.model('traveler', travelerSchema);
+const travel_itinerary_model = mongoose.model('travelItinerary', travelItinerarySchema);
 
 module.exports.user = user_model;
 module.exports.userType = user_type_model;
 module.exports.traveler = traveler_model;
+module.exports.travelItinerary = travel_itinerary_model;
