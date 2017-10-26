@@ -24,6 +24,8 @@ module.exports = function (app) {
     app.post('/search', Scraper.scrape);
     app.post('/signin', requireSignin, Auth.signin);
     app.post('/signup', Auth.signup);
+    app.get('/user', Auth.getUser);
+    app.put('/user', Auth.updateUser);
 
     app.post('/usertype', (req, res, next) => {
       const name = req.body.name;
