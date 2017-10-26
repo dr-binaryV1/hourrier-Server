@@ -23,7 +23,7 @@ const typeSchema = new Schema({
 
 const travelerSchema = new Schema({
   userId: { type: String, required: true, unique: true },
-  passportPhone: { type: String },
+  passportPhoto: { type: String },
   shippingAddress1: { type: String, required: true },
   shippingAddress2: { type: String },
   shippingCity: { type: String, required: true },
