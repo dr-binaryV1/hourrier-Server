@@ -18,6 +18,34 @@ exports.signin = (req, res, next) => {
     res.send({ token: tokenForUser(req.user), user: req.user });
 };
 
+exports.getUser = (req, res, next) => {
+    User.findOne({"_id": req.get('userId')}, null, (err, user) => {
+        if(err) { return next(err); }
+        res.json(user);
+    })
+}
+
+exports.updateUser = (req, res, next) => {
+    User.findOne({"_id": req.get('userId')}, null, (err, user) => {
+        if(err) { return next(err); }
+
+        user.username = req.body.username;
+        user.firstname = req.body.firstname;
+        user.lastname = req.body.lastname;
+        user.email = req.body.email;
+        user.mailingAddress1 = req.body.mailingAddress1;
+        user.mailingAddress2 = req.body.mailingAddress2;
+        user.mailingCity = req.body.mailingCity;
+        user.mailingCountry = req.body.mailingCountry;
+        user.mailingZip = req.body.mailingZip;
+
+        user.save((err, user) => {
+            if(err) { return next(err); }
+            res.json(user);
+        })
+    })
+}
+
 exports.signup = (req, res, next) => {
     const firstname = req.body.firstname;
     const lastname = req.body.lastname;
