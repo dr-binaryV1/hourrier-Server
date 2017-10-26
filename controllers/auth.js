@@ -21,7 +21,22 @@ exports.signin = (req, res, next) => {
 exports.getUser = (req, res, next) => {
     User.findOne({"_id": req.get('userId')}, null, (err, user) => {
         if(err) { return next(err); }
-        res.json(user);
+
+        const data = {
+            firstname: user.firstname,
+            lastname: user.lastname,
+            username: user.username,
+            mailingAddress1: user.mailingAddress1,
+            mailingAddress2: user.mailingAddress2,
+            mailingCity: user.mailingCity,
+            mailingCountry: user.mailingCountry,
+            mailingZip: user.mailingZip,
+            userTypeId: user.userTypeId,
+            intineraryIds: user.intineraryIds,
+            shippingAddressIds: user.shippingAddressIds, 
+            email: user.email
+        }
+        res.json(data);
     })
 }
 
