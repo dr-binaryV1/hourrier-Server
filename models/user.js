@@ -13,9 +13,17 @@ const userSchema = new Schema({
     mailingZip: { type: String, default: "00000"},
     userTypeId: { type: String, required: true },
     intineraryIds: [{type: String}],
-    shippingAddressIds: [{type: String}], 
+    shippingAddressIds: [{type: String}],
     email: { type: String, unique: true, required: true, lowercase: true },
     password: { type: String, required: true }
+});
+
+const shippingSchema = new Schema({
+  shippingAddress1: { type: String, required: true },
+  shippingAddress2: { type: String },
+  shippingCity: { type: String, required: true },
+  shippingCountry: { type: String, required: true },
+  shippingZip: { type: String, required: true }
 });
 
 const typeSchema = new Schema({
@@ -70,8 +78,10 @@ const user_model = mongoose.model('user', userSchema);
 const user_type_model = mongoose.model('userType', typeSchema);
 const traveler_model = mongoose.model('traveler', travelerSchema);
 const travel_itinerary_model = mongoose.model('travelItinerary', travelItinerarySchema);
+const shipping_model = mongoose.model('shipping', shippingSchema);
 
 module.exports.user = user_model;
 module.exports.userType = user_type_model;
 module.exports.traveler = traveler_model;
 module.exports.travelItinerary = travel_itinerary_model;
+module.exports.shipping = shipping_model;
