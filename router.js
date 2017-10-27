@@ -1,3 +1,4 @@
+const User = require('./controllers/user');
 const Auth = require('./controllers/auth');
 const UserModels = require('./models/user');
 const Order = require('./controllers/order');
@@ -24,10 +25,10 @@ module.exports = function (app) {
     app.post('/search', Scraper.scrape);
     app.post('/signin', requireSignin, Auth.signin);
     app.post('/signup', Auth.signup);
-    app.get('/user', Auth.getUser);
-    app.put('/user', Auth.updateUser);
-    app.post('/shipping/add', Auth.addShipping);
-    app.post('/shipping', Auth.getShippingAddress);
+    app.get('/user', User.getUser);
+    app.put('/user', User.updateUser);
+    app.post('/shipping/add', User.addShipping);
+    app.post('/shipping', User.getShippingAddress);
 
     app.post('/usertype', (req, res, next) => {
       const name = req.body.name;
