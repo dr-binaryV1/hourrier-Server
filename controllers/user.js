@@ -71,6 +71,24 @@ exports.getShippingAddress = (req, res, next) => {
   });
 };
 
+exports.removeShippingAddress = (req, res, next) => {
+  Shipping.remove({"_id": req.body.addressId}, (err) => {
+    if(err) { return next(err); }
+
+    User.findOne({"_id": req.get('user')}, null, (err, user) => {
+      if(err) { return next(err); }
+      user.shippingAddressIds = user.shippingAddressIds.filter(id => {
+        return id !== req.body.addressId;
+      });
+
+      user.save((err, user) => {
+        if(err) { return next(err); }
+        res.json(user);
+      });
+    });
+  });
+};
+
 exports.updateUser = (req, res, next) => {
   User.findOne({"_id": req.get('userId')}, null, (err, user) => {
     if(err) { return next(err); }
