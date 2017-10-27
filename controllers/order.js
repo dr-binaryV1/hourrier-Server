@@ -9,7 +9,7 @@ exports.cart = (req, res, next) => {
   Cart.findOne({"userId": req.get('user')}, null, (err, cart) => {
     if(err) { return next(err); }
     res.json(cart);
-  })
+  });
 };
 
 exports.addItem = (req, res, next) => {
@@ -27,7 +27,7 @@ exports.addItem = (req, res, next) => {
 
     Cart.findOne({"userId": req.get('user')}, null, (err, cart) => {
       if(err) { return next(err); }
-      
+
       cart.itemIds.push(item._id);
       cart.save((err, cart) => {
         if (err) { return next(err); }
@@ -47,7 +47,7 @@ exports.getItem = (req, res, next) => {
 exports.checkItem = (req, res, next) => {
   Cart.findOne({"userId": req.get('user')}, null, (err, cartItems) => {
     if(err) { return next(err); }
-    
+
     Item.find({"_id": cartItems.itemIds.map(id => {return id})}, null, (err, items) => {
       if(err) { return next(err); }
       let filteredItems = items.filter(item => {
@@ -57,7 +57,7 @@ exports.checkItem = (req, res, next) => {
       filteredItems.length > 0 ? res.json({ itemFound: true }) : res.json({ itemFound: false });
     });
   });
-}
+};
 
 exports.removeItem = (req, res, next) => {
   Cart.findOne({"userId": req.get('user')}, null, (err, cart) => {
