@@ -21,6 +21,7 @@ exports.getUser = (req, res, next) => {
       userTypeId: user.userTypeId,
       intineraryIds: user.intineraryIds,
       shippingAddressIds: user.shippingAddressIds,
+      traveler: user.traveler,
       email: user.email
     };
     res.json(data);
@@ -103,6 +104,18 @@ exports.updateUser = (req, res, next) => {
     user.mailingCountry = req.body.mailingCountry;
     user.mailingZip = req.body.mailingZip;
 
+    user.save((err, user) => {
+      if(err) { return next(err); }
+      res.json(user);
+    });
+  });
+};
+
+exports.updateTravelerStatus = (req, res, next) => {
+  User.findOne({"_id": req.get('userId')}, null, (err, user) => {
+    if(err) { return next(err); }
+
+    user.traveler = req.body.status;
     user.save((err, user) => {
       if(err) { return next(err); }
       res.json(user);
