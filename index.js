@@ -1,5 +1,7 @@
 const express = require('express');
 const http = require('http');
+const https = require('https');
+const fs = require('fs');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const router = require('./router');
@@ -13,10 +15,16 @@ mongoose.connect('mongodb://localhost:hourrier');
 app.use(morgan('combined'));
 app.use(bodyParser.json({ type: '*/*'}));
 
-var corsOptions = {
+const corsOptions = {
   origin: '*',
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204 
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
+
+const sslOptions = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem'),
+  passphrase: 'DamianW1234'
+};
 
 app.use(cors(corsOptions));
 router(app);
