@@ -55,11 +55,17 @@ exports.addShipping = (req, res, next) => {
           mailingCountry: user.mailingCountry,
           mailingZip: user.mailingZip,
           userTypeId: user.userTypeId,
+          traveler: user.traveler,
           intineraryIds: user.intineraryIds,
           shippingAddressIds: user.shippingAddressIds,
           email: user.email
         }
-        res.json(data);
+
+        Shipping.find({"_id": data.shippingAddressIds.map(id => {return id})}, null, (err, addresses) => {
+          if(err) { return next(err); }
+
+          res.json({user: data, addresses});
+        });
       });
     });
   });
@@ -82,9 +88,13 @@ exports.removeShippingAddress = (req, res, next) => {
         return id !== req.body.addressId;
       });
 
-      user.save((err, user) => {
+      Shipping.find({"_id": user.shippingAddressIds.map(id => {return id})}, null, (err, addresses) => {
         if(err) { return next(err); }
-        res.json(user);
+
+        user.save((err, user) => {
+          if(err) { return next(err); }
+          res.json({user, addresses});
+        });
       });
     });
   });
