@@ -101,7 +101,7 @@ exports.checkout = (req, res, next) => {
         cart.itemIds = [];
         cart.save((err, cart) => {
           if(err) { return next(err); }
-          res.json({ orderSaved: true });
+          res.json({ itemIds: cart.itemIds });
         });
       });
     });
