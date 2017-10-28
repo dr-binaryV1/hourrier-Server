@@ -30,6 +30,7 @@ module.exports = function (app) {
     app.post('/shipping/add', User.addShipping);
     app.post('/shipping', User.getShippingAddress);
     app.delete('/shipping', User.removeShippingAddress);
+    app.put('/user/traveler', User.updateTravelerStatus);
 
     app.post('/usertype', (req, res, next) => {
       const name = req.body.name;
