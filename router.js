@@ -27,6 +27,7 @@ module.exports = function (app) {
     app.post('/signup', Auth.signup);
     app.get('/user', User.getUser);
     app.put('/user', User.updateUser);
+    app.put('/user/primaryShippingAddress', User.changePrimaryShipping);
     app.post('/shipping/add', User.addShipping);
     app.post('/shipping', User.getShippingAddress);
     app.delete('/shipping', User.removeShippingAddress);
