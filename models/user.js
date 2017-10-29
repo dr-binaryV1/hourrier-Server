@@ -14,6 +14,7 @@ const userSchema = new Schema({
     traveler: { type: Boolean, default: false },
     intineraryIds: [{type: String}],
     shippingAddressIds: [{type: String}],
+    primaryShippingAddress: { type: String },
     email: { type: String, unique: true, required: true, lowercase: true },
     password: { type: String, required: true }
 });
