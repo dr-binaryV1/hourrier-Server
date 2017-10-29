@@ -20,6 +20,7 @@ exports.getUser = (req, res, next) => {
       mailingZip: user.mailingZip,
       userTypeId: user.userTypeId,
       intineraryIds: user.intineraryIds,
+      primaryShippingAddress: user.primaryShippingAddress,
       shippingAddressIds: user.shippingAddressIds,
       traveler: user.traveler,
       email: user.email
@@ -42,6 +43,9 @@ exports.addShipping = (req, res, next) => {
 
     User.findOne({"_id": req.get('user')}, null, (err, user) => {
       user.shippingAddressIds.push(shipping._id);
+      if(user.shippingAddressIds.length === 1) {
+        user.primaryShippingAddress = shipping._id
+      }
       user.save((err, user) => {
         if(err) { return next(err); }
 
@@ -57,6 +61,7 @@ exports.addShipping = (req, res, next) => {
           userTypeId: user.userTypeId,
           traveler: user.traveler,
           intineraryIds: user.intineraryIds,
+          primaryShippingAddress: user.primaryShippingAddress,
           shippingAddressIds: user.shippingAddressIds,
           email: user.email
         }
@@ -67,6 +72,18 @@ exports.addShipping = (req, res, next) => {
           res.json({user: data, addresses});
         });
       });
+    });
+  });
+};
+
+exports.changePrimaryShipping = (req, res, next) => {
+  User.findOne({"_id": req.get('user')}, null, (err, user) => {
+    if(err) { return next(err); }
+
+    user.primaryShippingAddress = req.body.primaryShippingAddress;
+    user.save((err, user) => {
+      if(err) { return next(err); }
+      res.json(user);
     });
   });
 };
