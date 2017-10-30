@@ -10,7 +10,7 @@ const cors = require('cors');
 
 const app = express();
 
-mongoose.connect('mongodb://localhost:hourrier');
+mongoose.connect('mongodb://localhost:27017/hourrier');
 
 app.use(morgan('combined'));
 app.use(bodyParser.json({ type: '*/*'}));
