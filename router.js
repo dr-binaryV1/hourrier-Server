@@ -16,26 +16,26 @@ module.exports = function (app) {
         res.send({ message: 'Super secret code is ABC123'});
     });
 
-    app.get('/shoppingcart', Order.cart);
-    app.post('/shoppingcart', Order.addItem);
-    app.post('/shoppingcart/check', Order.checkItem);
-    app.post('/shoppingcartitem', Order.getItem);
-    app.delete('/shoppingcartitem', Order.removeItem);
-    app.post('/checkout', Order.checkout);
-    app.post('/search', Scraper.scrape);
+    app.get('/shoppingcart', requireAuth, Order.cart);
+    app.get('/user', requireAuth, User.getUser);
+    app.post('/shoppingcart', requireAuth, Order.addItem);
+    app.post('/shoppingcart/check', requireAuth, Order.checkItem);
+    app.post('/shoppingcartitem', requireAuth, Order.getItem);
+    app.post('/checkout', requireAuth, Order.checkout);
+    app.post('/search', requireAuth, Scraper.scrape);
     app.post('/signin', requireSignin, Auth.signin);
     app.post('/signup', Auth.signup);
-    app.get('/user', User.getUser);
-    app.put('/user', User.updateUser);
-    app.put('/user/primaryShippingAddress', User.changePrimaryShipping);
-    app.post('/shipping/add', User.addShipping);
-    app.post('/shipping', User.getShippingAddress);
-    app.delete('/shipping', User.removeShippingAddress);
-    app.post('/itinerary/add', User.addItinerary);
-    app.post('/itinerary', User.getTravelItinerary);
-    app.delete('/itinerary', User.removeTravelItinerary);
-    app.put('/user/traveler', User.updateTravelerStatus);
-
+    app.post('/shipping/add', requireAuth, User.addShipping);
+    app.post('/shipping', requireAuth, User.getShippingAddress);
+    app.post('/itinerary/add', requireAuth, User.addItinerary);
+    app.post('/itinerary', requireAuth, User.getTravelItinerary);
+    app.put('/user', requireAuth, User.updateUser);
+    app.put('/user/primaryShippingAddress', requireAuth, User.changePrimaryShipping);
+    app.put('/user/traveler', requireAuth, User.updateTravelerStatus);
+    app.delete('/shoppingcartitem', requireAuth, Order.removeItem);
+    app.delete('/itinerary', requireAuth, User.removeTravelItinerary);
+    app.delete('/shipping', requireAuth, User.removeShippingAddress);
+    
     app.post('/usertype', (req, res, next) => {
       const name = req.body.name;
 
