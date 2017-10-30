@@ -31,6 +31,9 @@ module.exports = function (app) {
     app.post('/shipping/add', User.addShipping);
     app.post('/shipping', User.getShippingAddress);
     app.delete('/shipping', User.removeShippingAddress);
+    app.post('/itinerary/add', User.addItinerary);
+    app.post('/itinerary', User.getTravelItinerary);
+    app.delete('/itinerary', User.removeTravelItinerary);
     app.put('/user/traveler', User.updateTravelerStatus);
 
     app.post('/usertype', (req, res, next) => {
