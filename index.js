@@ -20,11 +20,11 @@ const corsOptions = {
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 
-const sslOptions = {
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.pem'),
-  passphrase: 'DamianW1234'
-};
+// const sslOptions = {
+//   key: fs.readFileSync('key.pem'),
+//   cert: fs.readFileSync('cert.pem'),
+//   passphrase: 'DamianW1234'
+// };
 
 app.use(cors(corsOptions));
 router(app);
