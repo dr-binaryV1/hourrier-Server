@@ -35,30 +35,4 @@ module.exports = function (app) {
     app.delete('/shoppingcartitem', requireAuth, Order.removeItem);
     app.delete('/itinerary', requireAuth, User.removeTravelItinerary);
     app.delete('/shipping', requireAuth, User.removeShippingAddress);
-    
-    app.post('/usertype', (req, res, next) => {
-      const name = req.body.name;
-
-      // Check if type provided exists
-      UserType.findOne({ name: name }, (err, existingType) => {
-        if(err) { return next(err); }
-
-        // If a type exist, return an error
-        if(existingType) {
-          return res.status(422).json({ error: "User type already exists." })
-        }
-
-        // If not exist, create a new user type
-        const userType = new UserType({
-          name: name
-        });
-
-        userType.save((err, result) => {
-          if(err) { return next(err); }
-
-          // Respond to the request indicating success
-          res.json(result);
-        });
-      });
-    });
 }
