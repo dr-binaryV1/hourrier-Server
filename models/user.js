@@ -75,13 +75,11 @@ userSchema.methods.comparePassword = function(candidatePassword, callback) {
 }
 
 const user_model = mongoose.model('user', userSchema);
-const user_type_model = mongoose.model('userType', typeSchema);
 const traveler_model = mongoose.model('traveler', travelerSchema);
 const travel_itinerary_model = mongoose.model('travelItinerary', travelItinerarySchema);
 const shipping_model = mongoose.model('shipping', shippingSchema);
 
 module.exports.user = user_model;
-module.exports.userType = user_type_model;
 module.exports.traveler = traveler_model;
 module.exports.travelItinerary = travel_itinerary_model;
 module.exports.shipping = shipping_model;
