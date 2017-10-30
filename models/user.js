@@ -27,10 +27,6 @@ const shippingSchema = new Schema({
   shippingZip: { type: String, required: true }
 });
 
-const typeSchema = new Schema({
-  name: { type: String, required: true, unique: true }
-});
-
 const travelerSchema = new Schema({
   userId: { type: String, required: true, unique: true },
   passportPhoto: { type: String },
