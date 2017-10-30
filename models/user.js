@@ -53,8 +53,10 @@ const travelItinerarySchema = new Schema({
 
 // On Save Hook, encrypt password
 userSchema.pre('save', function(next) {
+    if(!this.isModified('password')) {
+        return next();
+    }
     const user = this;
-
     bcrypt.genSalt(10, function (err, salt) {
         if(err) { return next(err); }
 
