@@ -16,7 +16,8 @@ const orderItemsSchema = new Schema({
 
 const orderSchema = new Schema({
   buyerId: {type: String, required: true},
-  orderItemsId: {type: String, required: true, unique: true}
+  orderItemsId: {type: String, required: true, unique: true},
+  status: {type: String, default: 'pending'}
 });
 
 const cartSchema = new Schema({
