@@ -107,3 +107,27 @@ exports.checkout = (req, res, next) => {
     });
   });
 };
+
+exports.getOrders = (req, res, next) => {
+  Order.find({}, null, (err, orders) => {
+    if(err) { return next(err); }
+    res.json({orders});
+  });
+};
+
+exports.getOneOrder = (req, res, next) => {
+  Order.findOne({"_id": req.body.orderId}, null, (err, order) => {
+    if(err) { return next(err); }
+
+    OrderItems.findOne({"_id": order.orderItemsId}, null, (err, orderItems) => {
+      if(err) { return next(err); }
+
+      Item.find({"_id": orderItems.itemIds.map(id => { return id })}, null, (err, items) => {
+        if(err) { return next(err); }
+
+        // TODO: Return User information with response
+        res.json({items});
+      });
+    });
+  });
+};
