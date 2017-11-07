@@ -18,6 +18,7 @@ module.exports = function (app) {
 
     app.get('/shoppingcart', requireAuth, Order.cart);
     app.get('/user', requireAuth, User.getUser);
+    app.get('/orders', Order.getOrders);
     app.post('/shoppingcart', requireAuth, Order.addItem);
     app.post('/shoppingcart/check', requireAuth, Order.checkItem);
     app.post('/shoppingcartitem', requireAuth, Order.getItem);
@@ -29,6 +30,7 @@ module.exports = function (app) {
     app.post('/shipping', requireAuth, User.getShippingAddress);
     app.post('/itinerary/add', requireAuth, User.addItinerary);
     app.post('/itinerary', requireAuth, User.getTravelItinerary);
+    app.post('/orders/one', Order.getOneOrder);
     app.put('/user', requireAuth, User.updateUser);
     app.put('/user/primaryShippingAddress', requireAuth, User.changePrimaryShipping);
     app.put('/user/traveler', requireAuth, User.updateTravelerStatus);
