@@ -1,4 +1,6 @@
 const OrderModels = require('../models/order');
+const UserModels = require('../models/user');
+const User = UserModels.user;
 const Cart = OrderModels.cart;
 const Item = OrderModels.item;
 const Product = OrderModels.item;
@@ -125,9 +127,36 @@ exports.getOneOrder = (req, res, next) => {
       Item.find({"_id": orderItems.itemIds.map(id => { return id })}, null, (err, items) => {
         if(err) { return next(err); }
 
-        // TODO: Return User information with response
-        res.json({items});
+        User.findOne({"_id": order.buyerId}, null, (err, user) => {
+          if(err) { return next(err); }
+
+          const data = {
+            firstname: user.firstname,
+            lastname: user.lastname,
+            mailingAddress1: user.mailingAddress1,
+            mailingAddress2: user.mailingAddress2,
+            mailingCity: user.mailingCity,
+            mailingCountry: user.mailingCountry,
+            mailingZip: user.mailingZip,
+            email: user.email
+          };
+
+          res.json({items, buyer: data, status: order.status});
+        });
       });
+    });
+  });
+};
+
+exports.findTravelers = (req, res, next) => {
+  Order.findOne({"_id": req.body.orderId}, null, (err, order) => {
+    if(err) { return next(err); }
+
+    order.status = 'locating travelers';
+    order.save((err, order) => {
+      if(err) { return next(err); }
+
+      res.json({status: order.status});
     });
   });
 };
