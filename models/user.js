@@ -13,6 +13,7 @@ const userSchema = new Schema({
     mailingZip: { type: String, default: "00000"},
     traveler: { type: Boolean, default: false },
     itineraryIds: [{type: String}],
+    notificationIds: [{type: String}],
     shippingAddressIds: [{type: String}],
     primaryShippingAddress: { type: String },
     email: { type: String, unique: true, required: true, lowercase: true },
