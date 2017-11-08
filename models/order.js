@@ -25,12 +25,21 @@ const cartSchema = new Schema({
   itemIds: [{type: String}]
 });
 
+const orderNotificationSchema = new Schema({
+  subject: { type: String, required: true },
+  items: [itemSchema],
+  details: { type: String, required: true },
+  status: { type: String, default: 'active' }
+});
+
 const item_model = mongoose.model('item', itemSchema);
 const cart_model = mongoose.model('cart', cartSchema);
 const order_model = mongoose.model('order', orderSchema);
 const orderItems_model = mongoose.model('orderItems', orderItemsSchema);
+const order_notif_model = mongoose.model('orderNotification', orderNotificationSchema);
 
 module.exports.item = item_model;
 module.exports.cart = cart_model;
 module.exports.order = order_model;
 module.exports.orderItems = orderItems_model;
+module.exports.orderNotification = order_notif_model;
