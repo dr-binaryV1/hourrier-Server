@@ -1,10 +1,12 @@
 const OrderModels = require('../models/order');
 const UserModels = require('../models/user');
 const User = UserModels.user;
+const Itinerary = UserModels.travelItinerary;
 const Cart = OrderModels.cart;
 const Item = OrderModels.item;
 const Product = OrderModels.item;
 const OrderItems = OrderModels.orderItems;
+const OrderNotification = OrderModels.orderNotification;
 const Order = OrderModels.order;
 
 exports.cart = (req, res, next) => {
@@ -149,14 +151,36 @@ exports.getOneOrder = (req, res, next) => {
 };
 
 exports.findTravelers = (req, res, next) => {
-  Order.findOne({"_id": req.body.orderId}, null, (err, order) => {
+  const notif = new OrderNotification({
+    subject: 'You have a package request',
+    items: req.body.items,
+    details: `This package contains ${req.body.items.length} item(s)`
+  });
+
+  notif.save((err, notification) => {
     if(err) { return next(err); }
 
-    order.status = 'locating travelers';
-    order.save((err, order) => {
+    Order.findOne({"_id": req.body.orderId}, null, (err, order) => {
       if(err) { return next(err); }
 
-      res.json({status: order.status});
+      order.status = 'locating travelers';
+      order.save((err, order) => {
+        if(err) { return next(err); }
+
+        User.find({"traveler": true}, null, (err, users) => {
+          if(err) { return next(err); }
+
+          let availableTravelerCount = 0;
+          users.map(user => {
+            Itinerary.find({"_id": user.itineraryIds.map(id => { return id })}, null, (err, itineraries) => {
+              if(err) { return next(err); }
+              availableTravelerCount++;
+              // Check if itinerary match date range and dispatch notification
+            });
+          });
+          res.json({status: order.status});
+        });
+      });
     });
   });
 };
