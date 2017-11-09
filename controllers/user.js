@@ -21,6 +21,7 @@ exports.getUser = (req, res, next) => {
       mailingZip: user.mailingZip,
       userTypeId: user.userTypeId,
       itineraryIds: user.itineraryIds,
+      notificationIds: user.notificationIds,
       primaryShippingAddress: user.primaryShippingAddress,
       shippingAddressIds: user.shippingAddressIds,
       traveler: user.traveler,
