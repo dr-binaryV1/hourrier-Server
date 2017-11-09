@@ -83,7 +83,7 @@ exports.removeItem = (req, res, next) => {
       });
     });
   });
-}; 
+};
 
 exports.checkout = (req, res, next) => {
   const orderItems = new OrderItems({
@@ -154,7 +154,7 @@ exports.findTravelers = (req, res, next) => {
   const notif = new OrderNotification({
     subject: 'You have a package request',
     items: req.body.items,
-    details: `This package contains ${req.body.items.length} item(s)`
+    details: `This package contains ${req.body.items.length} item(s). Click view to see the details of this package.`
   });
 
   notif.save((err, notification) => {
