@@ -65,6 +65,7 @@ exports.addShipping = (req, res, next) => {
           userTypeId: user.userTypeId,
           traveler: user.traveler,
           itineraryIds: user.itineraryIds,
+          notificationIds: user.notificationIds,
           primaryShippingAddress: user.primaryShippingAddress,
           shippingAddressIds: user.shippingAddressIds,
           email: user.email
@@ -112,6 +113,7 @@ exports.addItinerary = (req, res, next) => {
           userTypeId: user.userTypeId,
           traveler: user.traveler,
           itineraryIds: user.itineraryIds,
+          notificationIds: user.notificationIds,
           primaryShippingAddress: user.primaryShippingAddress,
           shippingAddressIds: user.shippingAddressIds,
           email: user.email
