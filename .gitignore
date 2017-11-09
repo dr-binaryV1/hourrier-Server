@@ -1,6 +1,5 @@
 node_modules
 key.pem
 cert.pem
-build
 server
 config
