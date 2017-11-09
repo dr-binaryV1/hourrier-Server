@@ -83,7 +83,7 @@ exports.removeItem = (req, res, next) => {
       });
     });
   });
-};
+}; 
 
 exports.checkout = (req, res, next) => {
   const orderItems = new OrderItems({
@@ -174,13 +174,32 @@ exports.findTravelers = (req, res, next) => {
           users.map(user => {
             Itinerary.find({"_id": user.itineraryIds.map(id => { return id })}, null, (err, itineraries) => {
               if(err) { return next(err); }
-              availableTravelerCount++;
-              // Check if itinerary match date range and dispatch notification
+
+              const ONE_HOUR = 60 * 60 * 1000;
+              const validItinerary = itineraries.filter(itinerary => {
+                return (new Date(itinerary.departureDate)) - Date.now() > (ONE_HOUR * 72);
+              });
+
+              if(validItinerary.length > 0) {
+                availableTravelerCount++;
+                user.notificationIds.push(notification._id);
+              }
+              user.save((err, user) => {
+                if(err) { return next(err); }
+              });
             });
           });
-          res.json({status: order.status});
+          res.json({status: order.status, travelersFound: availableTravelerCount});
         });
       });
     });
+  });
+};
+
+exports.getNotifications = (req, res, next) => {
+  OrderNotification.find({"_id": req.body.notificationsId.map(id => { return id })}, null, (err, notifs) => {
+    if(err) { return next(err); }
+
+    res.json({notifications: notifs});
   });
 };
