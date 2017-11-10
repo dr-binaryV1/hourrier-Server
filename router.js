@@ -39,4 +39,6 @@ module.exports = function (app) {
     app.delete('/shoppingcartitem', requireAuth, Order.removeItem);
     app.delete('/itinerary', requireAuth, User.removeTravelItinerary);
     app.delete('/shipping', requireAuth, User.removeShippingAddress);
+    app.delete('/notifications', requireAuth, User.deleteNotification);
+    app.delete('/notifications/all', requireAuth, User.deleteAllNotifications);
 }
