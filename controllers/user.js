@@ -236,3 +236,33 @@ exports.updateTravelerStatus = (req, res, next) => {
     });
   });
 };
+
+exports.deleteNotification = (req, res, next) => {
+  User.findOne({"_id": req.get('userId')}, null, (err, user) => {
+    if(err) { return next(err); }
+
+    user.notificationIds = user.notificationIds.filter(id => {
+      return id !== req.body.notificationId
+    });
+
+    user.save((err, user) => {
+      if(err) { return next(err); }
+
+      res.json({user});
+    });
+  });
+};
+
+exports.deleteAllNotifications = (req, res, next) => {
+  User.findOne({"_id": req.get('userId')}, null, (err, user) => {
+    if(err) { return next(err); }
+
+    user.notificationIds = [];
+
+    user.save((err, user) => {
+      if(err) { return next(err); }
+
+      res.json({user});
+    });
+  });
+};
