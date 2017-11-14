@@ -45,7 +45,8 @@ const travelItinerarySchema = new Schema({
     departureTime: { type: String, required: true },
     arrivalCity: { type: String, required: true },
     arrivalDate: { type: Date, required: true },
-    arrivalTime: { type: String, required: true }
+    arrivalTime: { type: String, required: true },
+    flightNo: { type: String, required: true }
 });
 
 // On Save Hook, encrypt password
