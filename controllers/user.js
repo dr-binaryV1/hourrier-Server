@@ -88,7 +88,8 @@ exports.addItinerary = (req, res, next) => {
     departureTime: req.body.departureTime,
     arrivalCity: req.body.arrivalCity,
     arrivalDate: req.body.arrivalDate,
-    arrivalTime: req.body.arrivalTime
+    arrivalTime: req.body.arrivalTime,
+    flightNo: req.body.flightNo
   });
 
   itinerary.save((err, itinerary) => {
