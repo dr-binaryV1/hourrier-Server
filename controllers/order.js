@@ -244,6 +244,7 @@ exports.acceptPackage = (req, res, next) => {
                 mailingCity: user.mailingCity,
                 mailingCountry: user.mailingCountry,
                 mailingZip: user.mailingZip,
+                role: user.role,
                 userTypeId: user.userTypeId,
                 itineraryIds: user.itineraryIds,
                 notificationIds: user.notificationIds,
