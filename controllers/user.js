@@ -1,3 +1,4 @@
+const multer = require('multer');
 const UserModels = require('../models/user');
 const OrderModels = require('../models/order');
 const User = UserModels.user;
@@ -5,6 +6,15 @@ const Cart = OrderModels.cart;
 const Traveler = UserModels.traveler;
 const Shipping = UserModels.shipping;
 const Itinerary = UserModels.travelItinerary;
+const Storage = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, "../itineraries");
+  },
+  filename: (req, file, callback) => {
+    callback(null, `${file.fieldname}_${Date.now()}_${file.originalname}`);
+  }
+});
+const upload = multer({ storage: Storage }).array("itinerary", 3); //Field name and max count
 
 exports.getUser = (req, res, next) => {
   User.findOne({"_id": req.get('userId')}, null, (err, user) => {
@@ -130,6 +140,14 @@ exports.addItinerary = (req, res, next) => {
         });
       });
     });
+  });
+};
+
+exports.uploadItinerary = (req, res, next) => {
+  upload(req, res, (err) => {
+    if(err) { return next(err); }
+
+    res.json({msg: "File uploaded successfully"})
   });
 };
 
