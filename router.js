@@ -30,6 +30,7 @@ module.exports = function (app) {
     app.post('/shipping', requireAuth, User.getShippingAddress);
     app.post('/itinerary/add', requireAuth, User.addItinerary);
     app.post('/itinerary', requireAuth, User.getTravelItinerary);
+    app.post('/itinerary/upload', requireAuth, User.uploadItinerary);
     app.post('/orders/one', requireAuth, Order.getOneOrder);
     app.post('/orders/find/traveler', requireAuth, Order.findTravelers);
     app.post('/user/notifications', requireAuth, Order.getNotifications);
