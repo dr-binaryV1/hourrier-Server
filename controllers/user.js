@@ -21,6 +21,7 @@ exports.getUser = (req, res, next) => {
       mailingZip: user.mailingZip,
       userTypeId: user.userTypeId,
       itineraryIds: user.itineraryIds,
+      role: user.role,
       notificationIds: user.notificationIds,
       primaryShippingAddress: user.primaryShippingAddress,
       shippingAddressIds: user.shippingAddressIds,
@@ -64,6 +65,7 @@ exports.addShipping = (req, res, next) => {
           mailingZip: user.mailingZip,
           userTypeId: user.userTypeId,
           traveler: user.traveler,
+          role: user.role,
           itineraryIds: user.itineraryIds,
           notificationIds: user.notificationIds,
           primaryShippingAddress: user.primaryShippingAddress,
@@ -113,6 +115,7 @@ exports.addItinerary = (req, res, next) => {
           mailingZip: user.mailingZip,
           userTypeId: user.userTypeId,
           traveler: user.traveler,
+          role: user.role,
           itineraryIds: user.itineraryIds,
           notificationIds: user.notificationIds,
           primaryShippingAddress: user.primaryShippingAddress,
@@ -221,7 +224,26 @@ exports.updateUser = (req, res, next) => {
 
     user.save((err, user) => {
       if(err) { return next(err); }
-      res.json(user);
+
+      const data = {
+        firstname: user.firstname,
+        lastname: user.lastname,
+        username: user.username,
+        mailingAddress1: user.mailingAddress1,
+        mailingAddress2: user.mailingAddress2,
+        mailingCity: user.mailingCity,
+        mailingCountry: user.mailingCountry,
+        mailingZip: user.mailingZip,
+        userTypeId: user.userTypeId,
+        itineraryIds: user.itineraryIds,
+        role: user.role,
+        notificationIds: user.notificationIds,
+        primaryShippingAddress: user.primaryShippingAddress,
+        shippingAddressIds: user.shippingAddressIds,
+        traveler: user.traveler,
+        email: user.email
+      };
+      res.json(data);
     });
   });
 };
