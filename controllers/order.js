@@ -153,6 +153,7 @@ exports.getOneOrder = (req, res, next) => {
 exports.findTravelers = (req, res, next) => {
   const notif = new OrderNotification({
     subject: 'You have a package request',
+    orderId: req.body.orderId,
     items: req.body.items,
     details: `This package contains ${req.body.items.length} item(s). Click view to see the details of this package.`
   });
@@ -200,6 +201,63 @@ exports.getNotifications = (req, res, next) => {
   OrderNotification.find({"_id": req.body.notificationsId.map(id => { return id })}, null, (err, notifs) => {
     if(err) { return next(err); }
 
-    res.json({notifications: notifs});
+    const activeNotifications = notifs.filter(notification => {
+      return notification.status === 'active'
+    });
+
+    res.json({notifications: activeNotifications});
+  });
+};
+
+exports.acceptPackage = (req, res, next) => {
+  OrderNotification.findOne({"_id": req.body.notificationId}, null, (err, notification) => {
+    if(err) { return next(err); }
+
+    notification.status = 'inactive';
+    notification.save((err, notif) => {
+      if(err) { return next(err); }
+
+      Order.findOne({"_id": notif.orderId}, null, (err, order) => {
+        if(err) { return next(err); }
+
+        order.status = 'traveler found';
+        order.travelerId = req.get('userId');
+        order.save((err, order) => {
+          if(err) { return next(err); }
+
+          User.findOne({"_id": req.get('userId')}, null, (err, user) => {
+            if(err) { return next(err); }
+
+            user.notificationIds = user.notificationIds.filter(id => {
+              return id !== req.body.notificationId
+            });
+
+            user.save((err, user) => {
+              if(err) { return next(err); }
+
+              const data = {
+                firstname: user.firstname,
+                lastname: user.lastname,
+                username: user.username,
+                mailingAddress1: user.mailingAddress1,
+                mailingAddress2: user.mailingAddress2,
+                mailingCity: user.mailingCity,
+                mailingCountry: user.mailingCountry,
+                mailingZip: user.mailingZip,
+                userTypeId: user.userTypeId,
+                itineraryIds: user.itineraryIds,
+                notificationIds: user.notificationIds,
+                primaryShippingAddress: user.primaryShippingAddress,
+                shippingAddressIds: user.shippingAddressIds,
+                traveler: user.traveler,
+                email: user.email
+              };
+
+              res.json({user: data});
+            });
+          });
+        });
+      });
+    });
   });
 };
