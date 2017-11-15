@@ -33,6 +33,7 @@ module.exports = function (app) {
     app.post('/orders/one', requireAuth, Order.getOneOrder);
     app.post('/orders/find/traveler', requireAuth, Order.findTravelers);
     app.post('/user/notifications', requireAuth, Order.getNotifications);
+    app.post('/user/notigications/accept', requireAuth, Order.acceptPackage);
     app.put('/user', requireAuth, User.updateUser);
     app.put('/user/primaryShippingAddress', requireAuth, User.changePrimaryShipping);
     app.put('/user/traveler', requireAuth, User.updateTravelerStatus);
