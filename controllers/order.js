@@ -178,7 +178,7 @@ exports.findTravelers = (req, res, next) => {
 
               const ONE_HOUR = 60 * 60 * 1000;
               const validItinerary = itineraries.filter(itinerary => {
-                return (new Date(itinerary.departureDate)) - Date.now() > (ONE_HOUR * 72);
+                return ((new Date(itinerary.departureDate)) - Date.now() > (ONE_HOUR * 72) && user.shippingAddressIds.length > 0 && user.primaryShippingAddress !== '');
               });
 
               if(validItinerary.length > 0) {
