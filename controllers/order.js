@@ -1,3 +1,4 @@
+const mail = require('./mailer');
 const OrderModels = require('../models/order');
 const UserModels = require('../models/user');
 const User = UserModels.user;
@@ -184,6 +185,15 @@ exports.findTravelers = (req, res, next) => {
               if(validItinerary.length > 0) {
                 availableTravelerCount++;
                 user.notificationIds.push(notification._id);
+
+                const body = {
+                  from: '"Damian Wynter" <developerdamian@gmail.com>', // sender address
+                  to: user.email, // list of receivers
+                  subject: 'You have a new travel request!', // Subject line
+                  text: `Hello, ${user.username} \nYou have package request. Please visit the following link to view package. \n\nhttp://localhost:3000/notifications \n\nThank You, \nHourrier Team` // Email Body
+                };
+
+                mail(body);
               }
               user.save((err, user) => {
                 if(err) { return next(err); }
