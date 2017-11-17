@@ -3,8 +3,8 @@ const mailer = require('nodemailer');
 const transporter = mailer.createTransport({
   service: 'Gmail',
   auth: {
-      user: 'Enter Admin Email', // Enter administrative email here
-      pass: 'Enter Admin Password' // Enter Password for email here
+      user: 'info.hourrier@gmail.com', // Enter administrative email here
+      pass: 'hourrieradmin!' // Enter Password for email here
   }
 });
 
