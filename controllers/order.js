@@ -64,6 +64,22 @@ exports.checkItem = (req, res, next) => {
   });
 };
 
+exports.updateItem = (req, res, next) => {
+  Item.findOne({"_id": req.body.newItem._id}, null, (err, item) => {
+    if(err) { return next(err); }
+
+    item.price = req.body.newItem.price;
+    item.save((err, item) => {
+      if(err) { return next(err); }
+
+      Order.find({}, null, (err, orders) => {
+        if(err) { return next(err); }
+        res.json({orders});
+      });
+    });
+  });
+};
+
 exports.removeItem = (req, res, next) => {
   Cart.findOne({"userId": req.get('user')}, null, (err, cart) => {
     if(err) { return next(err); }
@@ -187,7 +203,7 @@ exports.findTravelers = (req, res, next) => {
                 user.notificationIds.push(notification._id);
 
                 const body = {
-                  from: '"Damian Wynter" <developerdamian@gmail.com>', // sender address
+                  from: '"Hourrier Team" <info.hourrier@gmail.com>', // sender address
                   to: user.email, // list of receivers
                   subject: 'You have a new travel request!', // Subject line
                   text: `Hello, ${user.username} \nYou have package request. Please visit the following link to view package. \n\nhttp://localhost:3000/notifications \n\nThank You, \nHourrier Team` // Email Body
