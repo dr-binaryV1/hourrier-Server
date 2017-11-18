@@ -23,6 +23,7 @@
     "passport": "^0.3.2",
     "passport-jwt": "^2.2.1",
     "passport-local": "^1.0.0",
-    "product-scraper": "^0.1.1"
+    "product-scraper": "^0.1.1",
+    "stripe": "^5.3.0"
   }
 }
