@@ -7,8 +7,9 @@ const Cart = OrderModels.cart;
 const Item = OrderModels.item;
 const Product = OrderModels.item;
 const OrderItems = OrderModels.orderItems;
-const OrderNotification = OrderModels.orderNotification;
+const Notification = OrderModels.notification;
 const Order = OrderModels.order;
+const Invoice = OrderModels.invoice;
 
 exports.cart = (req, res, next) => {
   Cart.findOne({"userId": req.get('user')}, null, (err, cart) => {
@@ -150,6 +151,7 @@ exports.getOneOrder = (req, res, next) => {
           if(err) { return next(err); }
 
           const data = {
+            _id: user._id,
             firstname: user.firstname,
             lastname: user.lastname,
             mailingAddress1: user.mailingAddress1,
@@ -168,7 +170,7 @@ exports.getOneOrder = (req, res, next) => {
 };
 
 exports.findTravelers = (req, res, next) => {
-  const notif = new OrderNotification({
+  const notif = new Notification({
     subject: 'You have a package request',
     orderId: req.body.orderId,
     items: req.body.items,
@@ -224,7 +226,7 @@ exports.findTravelers = (req, res, next) => {
 };
 
 exports.getNotifications = (req, res, next) => {
-  OrderNotification.find({"_id": req.body.notificationsId.map(id => { return id })}, null, (err, notifs) => {
+  Notification.find({"_id": req.body.notificationsId.map(id => { return id })}, null, (err, notifs) => {
     if(err) { return next(err); }
 
     const activeNotifications = notifs.filter(notification => {
@@ -236,7 +238,7 @@ exports.getNotifications = (req, res, next) => {
 };
 
 exports.acceptPackage = (req, res, next) => {
-  OrderNotification.findOne({"_id": req.body.notificationId}, null, (err, notification) => {
+  Notification.findOne({"_id": req.body.notificationId}, null, (err, notification) => {
     if(err) { return next(err); }
 
     notification.status = 'inactive';
@@ -286,5 +288,66 @@ exports.acceptPackage = (req, res, next) => {
         });
       });
     });
+  });
+};
+
+exports.sendInvoice = (req, res, next) => {
+  const invoice = new Invoice({
+    buyerId: req.body.invoice.buyerId,
+    items: req.body.invoice.items,
+    fee: req.body.invoice.fee,
+    total: req.body.invoice.total,
+  });
+
+  invoice.save((err, invoice) => {
+    if(err) { return next(err); }
+
+    const notif = new Notification({
+      invoiceId: invoice._id,
+      type: 'invoice',
+      subject: 'Your invoice is ready',
+      details: `Click view to see the details of this invoice.`
+    });
+
+    notif.save((err, notification) => {
+      if(err) { return next(err); }
+
+      User.findOne({"_id": req.body.invoice.buyerId}, null, (err, user) => {
+        if(err) { return next(err); }
+
+        user.notificationIds.push(notification._id);
+        user.save((err, user) => {
+          if(err) { return next(err); }
+
+          Order.findOne({"_id": req.body.invoice.orderId}, null, (err, order) => {
+            if(err) { return next(err); }
+
+            order.status = 'invoice sent';
+            order.save((err, order) => {
+              if(err) { return next(err); }
+
+              const body = {
+                from: '"Hourrier Team" <info.hourrier@gmail.com>', // sender address
+                to: user.email, // list of receivers
+                subject: 'Your Invoice is ready!', // Subject line
+                text: `Hello, ${user.username} \nYou have an invoice to attend to. Please visit the following link to view invoice. \n\nhttp://localhost:3000/notifications \n\nThank You, \nHourrier Team` // Email Body
+              };
+
+              mail(body);
+
+              res.json({status: order.status});
+            });
+          });
+        });
+      });
+    });
+  });
+};
+
+exports.getInvoice = (req, res, next) => {
+  Invoice.findOne({"_id": req.body.invoiceId}, null, (err, invoice) => {
+    if(err) { return next(err); }
+
+    res.json(invoice);
   });
 };
