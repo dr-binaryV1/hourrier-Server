@@ -1,3 +1,4 @@
+var stripe = require('stripe')('sk_test_ZWzRE7nXIe6cXE0n9r3S2USe');
 const mail = require('./mailer');
 const OrderModels = require('../models/order');
 const UserModels = require('../models/user');
@@ -349,5 +350,18 @@ exports.getInvoice = (req, res, next) => {
     if(err) { return next(err); }
 
     res.json(invoice);
+  });
+};
+
+exports.saveToken = (req, res, next) => {
+  stripe.charges.create({
+    amount: req.body.amount,
+    currency: "usd",
+    source: req.body.token.id, // obtained with Stripe.js
+    description: "Test Charge"
+  }, function(err, charge) {
+    if (err) { return next(err); }
+
+    res.json(charge);
   });
 };
