@@ -18,7 +18,8 @@ const userSchema = new Schema({
     shippingAddressIds: [{type: String}],
     primaryShippingAddress: { type: String },
     email: { type: String, unique: true, required: true, lowercase: true },
-    password: { type: String, required: true }
+    password: { type: String, required: true },
+    createdAt: {type: Date, default: date.now()}
 });
 
 const shippingSchema = new Schema({
