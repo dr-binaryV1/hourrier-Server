@@ -37,6 +37,7 @@ module.exports = function (app) {
     app.post('/orders/send/invoice', requireAuth, Order.sendInvoice);
     app.post('/user/notifications', requireAuth, Order.getNotifications);
     app.post('/user/notifications/accept', requireAuth, Order.acceptPackage);
+    app.post('/save-stripe-token', requireAuth, Order.saveToken);
     app.put('/user', requireAuth, User.updateUser);
     app.put('/user/primaryShippingAddress', requireAuth, User.changePrimaryShipping);
     app.put('/user/traveler', requireAuth, User.updateTravelerStatus);
