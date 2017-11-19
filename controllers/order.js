@@ -1,4 +1,5 @@
-var stripe = require('stripe')('sk_test_ZWzRE7nXIe6cXE0n9r3S2USe');
+const config = require('../config');
+const stripe = require('stripe')(config.stripeKey);
 const mail = require('./mailer');
 const OrderModels = require('../models/order');
 const UserModels = require('../models/user');
