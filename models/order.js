@@ -19,7 +19,7 @@ const orderSchema = new Schema({
   orderItemsId: {type: String, required: true, unique: true},
   status: {type: String, default: 'pending'},
   travelerId: {type: String},
-  createdAt: {type: Date, default: date.now()}
+  createdAt: {type: Date, default: Date.now()}
 });
 
 const invoiceSchema = new Schema({
@@ -28,7 +28,7 @@ const invoiceSchema = new Schema({
   fee: { type: Number, required: true },
   total: { type: Number, required: true },
   status: { type: String, default: 'unpaid' },
-  createdAt: {type: Date, default: date.now()}
+  createdAt: {type: Date, default: Date.now()}
 });
 
 const cartSchema = new Schema({
@@ -45,7 +45,7 @@ const notificationSchema = new Schema({
   items: [itemSchema],
   details: { type: String, required: true },
   status: { type: String, default: 'active' },
-  createdAt: {type: Date, default: date.now()}
+  createdAt: {type: Date, default: Date.now()}
 });
 
 const item_model = mongoose.model('item', itemSchema);
