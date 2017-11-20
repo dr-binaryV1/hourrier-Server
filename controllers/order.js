@@ -171,6 +171,17 @@ exports.getOneOrder = (req, res, next) => {
   });
 };
 
+exports.deleteOrder = (req, res, next) => {
+  Order.remove({"_id": req.body.orderId}, (err) => {
+    if(err) { return next(err); }
+
+    Order.find({}, null, (err, orders) => {
+      if(err) { return next(err); }
+      res.json({orders});
+    });
+  });
+};
+
 exports.findTravelers = (req, res, next) => {
   const notif = new Notification({
     subject: 'You have a package request',
@@ -197,9 +208,16 @@ exports.findTravelers = (req, res, next) => {
             Itinerary.find({"_id": user.itineraryIds.map(id => { return id })}, null, (err, itineraries) => {
               if(err) { return next(err); }
 
-              const ONE_HOUR = 60 * 60 * 1000;
+              const ONE_DAY = 60 * 60 * 1000 * 24;
               const validItinerary = itineraries.filter(itinerary => {
-                return ((new Date(itinerary.departureDate)) - Date.now() > (ONE_HOUR * 72) && user.shippingAddressIds.length > 0 && user.primaryShippingAddress !== '');
+                const departureDate = new Date(itinerary.departureDate);
+                return (
+                  departureDate - Date.now() >= (ONE_DAY * 3) &&
+                  departureDate - Date.now() <= (ONE_DAY * 7) &&
+                  order.buyerId !== user._id &&
+                  user.shippingAddressIds.length > 0 &&
+                  user.primaryShippingAddress !== ''
+                );
               });
 
               if(validItinerary.length > 0) {
