@@ -57,7 +57,8 @@ exports.signup = (req, res, next) => {
       mailingCity: city,
       mailingZip: zip,
       mailingCountry: country,
-      userTypeId
+      userTypeId,
+      createdAt: Date.now()
     });
 
     user.save((err, user) => {

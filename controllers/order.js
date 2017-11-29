@@ -115,7 +115,8 @@ exports.checkout = (req, res, next) => {
 
     const order = new Order({
       buyerId: req.get('user'),
-      orderItemsId: items._id
+      orderItemsId: items._id,
+      createdAt: Date.now()
     });
 
     order.save((err, order) => {
@@ -187,7 +188,8 @@ exports.findTravelers = (req, res, next) => {
     subject: 'You have a package request',
     orderId: req.body.orderId,
     items: req.body.items,
-    details: `This package contains ${req.body.items.length} item(s). Click view to see the details of this package.`
+    details: `This package contains ${req.body.items.length} item(s). Click view to see the details of this package.`,
+    createdAt: Date.now()
   });
 
   notif.save((err, notification) => {
@@ -317,6 +319,7 @@ exports.sendInvoice = (req, res, next) => {
     items: req.body.invoice.items,
     fee: req.body.invoice.fee,
     total: req.body.invoice.total,
+    createdAt: Date.now()
   });
 
   invoice.save((err, invoice) => {
@@ -326,7 +329,8 @@ exports.sendInvoice = (req, res, next) => {
       invoiceId: invoice._id,
       type: 'invoice',
       subject: 'Your invoice is ready',
-      details: `Click view to see the details of this invoice.`
+      details: `Click view to see the details of this invoice.`,
+      createdAt: Date.now()
     });
 
     notif.save((err, notification) => {

@@ -8,13 +8,13 @@ const Shipping = UserModels.shipping;
 const Itinerary = UserModels.travelItinerary;
 const Storage = multer.diskStorage({
   destination: (req, file, callback) => {
-    callback(null, "../itineraries");
+    callback(null, `${__dirname}/itineraries`);
   },
-  filename: (req, file, callback) => {
+  filename: function (req, file, callback) {
     callback(null, `${file.fieldname}_${Date.now()}_${file.originalname}`);
   }
 });
-const upload = multer({ storage: Storage }).array("itinerary", 3); //Field name and max count
+const upload = multer({ storage: Storage }).array("imgUploader", 3); //Field name and max count
 
 exports.getUser = (req, res, next) => {
   User.findOne({"_id": req.get('userId')}, null, (err, user) => {
@@ -147,7 +147,7 @@ exports.uploadItinerary = (req, res, next) => {
   upload(req, res, (err) => {
     if(err) { return next(err); }
 
-    res.json({msg: "File uploaded successfully"})
+    return res.json({msg: "succeeded"});
   });
 };
 
