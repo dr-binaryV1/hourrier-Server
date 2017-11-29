@@ -11,16 +11,16 @@ const cors = require('cors');
 const app = express();
 app.use(express.static(`${__dirname}/build`));
 
-mongoose.connect('mongodb://dr-binaryV1:Diamond0000@ds241875.mlab.com:41875/heroku_jb6hhdns', {
-  useMongoClient: true
-});
-// mongoose.connect('mongodb://localhost:27017/hourrier', {
+// mongoose.connect('mongodb://dr-binaryV1:Diamond0000@ds241875.mlab.com:41875/heroku_jb6hhdns', {
 //   useMongoClient: true
 // });
+mongoose.connect('mongodb://localhost:27017/hourrier', {
+  useMongoClient: true
+});
 mongoose.Promise = global.Promise;
 
 app.use(morgan('combined'));
-app.use(bodyParser.json({ type: '*/*'}));
+app.use(bodyParser.json({limit: '50mb'}));
 
 const corsOptions = {
   origin: '*',
