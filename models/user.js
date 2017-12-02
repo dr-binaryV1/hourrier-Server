@@ -15,6 +15,7 @@ const userSchema = new Schema({
     role: {type: String, default: 'customer'},
     itineraryIds: [{type: String}],
     notificationIds: [{type: String}],
+    packageIds: [{type: String}],
     shippingAddressIds: [{type: String}],
     primaryShippingAddress: { type: String },
     email: { type: String, unique: true, required: true, lowercase: true },
