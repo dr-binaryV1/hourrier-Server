@@ -19,7 +19,8 @@ const orderSchema = new Schema({
   orderItemsId: {type: String, required: true, unique: true},
   status: {type: String, default: 'pending'},
   travelerId: {type: String},
-  createdAt: {type: Date, default: Date.now()}
+  createdAt: {type: Date, default: Date.now()},
+  updatedAt: {type: Date, default: Date.now()}
 });
 
 const invoiceSchema = new Schema({
@@ -48,11 +49,19 @@ const notificationSchema = new Schema({
   createdAt: {type: Date, default: Date.now()}
 });
 
+const packageSchema = new Schema({
+  travelerId: {type: String, required: true},
+  items: [itemSchema],
+  status: {type: String, default: 'In Transit'},
+  createdAt: {type: Date, default: Date.now()}
+});
+
 const item_model = mongoose.model('item', itemSchema);
 const cart_model = mongoose.model('cart', cartSchema);
 const order_model = mongoose.model('order', orderSchema);
 const invoice_model = mongoose.model('invoice', invoiceSchema);
 const orderItems_model = mongoose.model('orderItems', orderItemsSchema);
+const package_model = mongoose.model('package', packageSchema);
 const notif_model = mongoose.model('notification', notificationSchema);
 
 module.exports.item = item_model;
@@ -61,3 +70,4 @@ module.exports.order = order_model;
 module.exports.invoice = invoice_model;
 module.exports.orderItems = orderItems_model;
 module.exports.notification = notif_model;
+module.exports.package = package_model;
