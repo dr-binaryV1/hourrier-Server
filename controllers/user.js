@@ -33,6 +33,7 @@ exports.getUser = (req, res, next) => {
       itineraryIds: user.itineraryIds,
       role: user.role,
       notificationIds: user.notificationIds,
+      packageIds: user.packageIds,
       primaryShippingAddress: user.primaryShippingAddress,
       shippingAddressIds: user.shippingAddressIds,
       traveler: user.traveler,
@@ -78,6 +79,7 @@ exports.addShipping = (req, res, next) => {
           role: user.role,
           itineraryIds: user.itineraryIds,
           notificationIds: user.notificationIds,
+          packageIds: user.packageIds,
           primaryShippingAddress: user.primaryShippingAddress,
           shippingAddressIds: user.shippingAddressIds,
           email: user.email
@@ -128,6 +130,7 @@ exports.addItinerary = (req, res, next) => {
           role: user.role,
           itineraryIds: user.itineraryIds,
           notificationIds: user.notificationIds,
+          packageIds: user.packageIds,
           primaryShippingAddress: user.primaryShippingAddress,
           shippingAddressIds: user.shippingAddressIds,
           email: user.email
@@ -256,6 +259,7 @@ exports.updateUser = (req, res, next) => {
         itineraryIds: user.itineraryIds,
         role: user.role,
         notificationIds: user.notificationIds,
+        packageIds: user.packageIds,
         primaryShippingAddress: user.primaryShippingAddress,
         shippingAddressIds: user.shippingAddressIds,
         traveler: user.traveler,
