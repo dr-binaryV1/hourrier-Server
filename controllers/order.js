@@ -12,6 +12,7 @@ const OrderItems = OrderModels.orderItems;
 const Notification = OrderModels.notification;
 const Order = OrderModels.order;
 const Invoice = OrderModels.invoice;
+const Package = OrderModels.package;
 
 exports.cart = (req, res, next) => {
   Cart.findOne({"userId": req.get('user')}, null, (err, cart) => {
@@ -126,7 +127,72 @@ exports.checkout = (req, res, next) => {
         cart.itemIds = [];
         cart.save((err, cart) => {
           if(err) { return next(err); }
-          res.json({ itemIds: cart.itemIds });
+
+          Item.find({"_id": items.itemIds}, null, (err, _items) => {
+            if(err) { return next(err); }
+
+            const notif = new Notification({
+              subject: 'You have a package request',
+              orderId: order._id,
+              items: _items,
+              details: `This package contains ${items.itemIds.length} item(s). Click view to see the details of this package.`,
+              createdAt: Date.now()
+            });
+
+            notif.save((err, notification) => {
+              if(err) { return next(err); }
+
+              Order.findOne({"_id": order._id}, null, (err, order) => {
+                if(err) { return next(err); }
+
+                order.status = 'locating travelers';
+                order.save((err, order) => {
+                  if(err) { return next(err); }
+
+                  User.find({"traveler": true}, null, (err, users) => {
+                    if(err) { return next(err); }
+
+                    let availableTravelerCount = 0;
+                    users.map(user => {
+                      Itinerary.find({"_id": user.itineraryIds.map(id => { return id })}, null, (err, itineraries) => {
+                        if(err) { return next(err); }
+
+                        const ONE_DAY = 60 * 60 * 1000 * 24;
+                        const validItinerary = itineraries.filter(itinerary => {
+                          const departureDate = new Date(itinerary.departureDate);
+                          return (
+                            departureDate - Date.now() >= (ONE_DAY * 3) &&
+                            departureDate - Date.now() <= (ONE_DAY * 7) &&
+                            order.buyerId != user._id &&
+                            user.shippingAddressIds.length > 0 &&
+                            user.primaryShippingAddress !== ''
+                          );
+                        });
+
+                        if(validItinerary.length > 0) {
+                          availableTravelerCount++;
+                          user.notificationIds.push(notification._id);
+
+                          const body = {
+                            from: '"Hourrier Team" <info.hourrier@gmail.com>', // sender address
+                            to: user.email, // list of receivers
+                            subject: 'You have a new travel request!', // Subject line
+                            text: `Hello, ${user.username} \nYou have package request. Please visit the following link to view package. \n\nhttp://localhost:3000/notifications \n\nThank You, \nHourrier Team` // Email Body
+                          };
+
+                          mail(body);
+                        }
+                        user.save((err, user) => {
+                          if(err) { return next(err); }
+                        });
+                      });
+                    });
+                    res.json({ itemIds: cart.itemIds });
+                  });
+                });
+              });
+            });
+          });
         });
       });
     });
@@ -199,6 +265,7 @@ exports.findTravelers = (req, res, next) => {
       if(err) { return next(err); }
 
       order.status = 'locating travelers';
+      order.updatedAt = Date.now();
       order.save((err, order) => {
         if(err) { return next(err); }
 
@@ -272,6 +339,7 @@ exports.acceptPackage = (req, res, next) => {
 
         order.status = 'traveler found';
         order.travelerId = req.get('userId');
+        order.updatedAt = Date.now();
         order.save((err, order) => {
           if(err) { return next(err); }
 
@@ -282,29 +350,41 @@ exports.acceptPackage = (req, res, next) => {
               return id !== req.body.notificationId
             });
 
-            user.save((err, user) => {
+            const pkg = new Package({
+              travelerId: user._id,
+              items: notif.items,
+              createdAt: Date.now()
+            });
+
+            pkg.save((err, pkg) => {
               if(err) { return next(err); }
 
-              const data = {
-                firstname: user.firstname,
-                lastname: user.lastname,
-                username: user.username,
-                mailingAddress1: user.mailingAddress1,
-                mailingAddress2: user.mailingAddress2,
-                mailingCity: user.mailingCity,
-                mailingCountry: user.mailingCountry,
-                mailingZip: user.mailingZip,
-                role: user.role,
-                userTypeId: user.userTypeId,
-                itineraryIds: user.itineraryIds,
-                notificationIds: user.notificationIds,
-                primaryShippingAddress: user.primaryShippingAddress,
-                shippingAddressIds: user.shippingAddressIds,
-                traveler: user.traveler,
-                email: user.email
-              };
+              user.packageIds.push(pkg._id);
+              user.save((err, user) => {
+                if(err) { return next(err); }
 
-              res.json({user: data});
+                const data = {
+                  firstname: user.firstname,
+                  lastname: user.lastname,
+                  username: user.username,
+                  mailingAddress1: user.mailingAddress1,
+                  mailingAddress2: user.mailingAddress2,
+                  mailingCity: user.mailingCity,
+                  mailingCountry: user.mailingCountry,
+                  mailingZip: user.mailingZip,
+                  role: user.role,
+                  userTypeId: user.userTypeId,
+                  itineraryIds: user.itineraryIds,
+                  notificationIds: user.notificationIds,
+                  packageIds: user.packageIds,
+                  primaryShippingAddress: user.primaryShippingAddress,
+                  shippingAddressIds: user.shippingAddressIds,
+                  traveler: user.traveler,
+                  email: user.email
+                };
+
+                res.json({user: data});
+              });
             });
           });
         });
@@ -373,6 +453,14 @@ exports.getInvoice = (req, res, next) => {
     if(err) { return next(err); }
 
     res.json(invoice);
+  });
+};
+
+exports.getPackage = (req, res, next) => {
+  Package.findOne({"_id": req.body.packageId}, null, (err, pkg) => {
+    if(err) { return next(err); }
+
+    res.json(pkg);
   });
 };
 
