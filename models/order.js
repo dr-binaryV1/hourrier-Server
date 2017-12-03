@@ -25,6 +25,7 @@ const orderSchema = new Schema({
 
 const invoiceSchema = new Schema({
   buyerId: { type: String, required: true },
+  orderId: { type: String, required: true },
   items: [itemSchema],
   fee: { type: Number, required: true },
   total: { type: Number, required: true },
