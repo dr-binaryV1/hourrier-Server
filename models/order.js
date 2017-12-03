@@ -52,6 +52,7 @@ const notificationSchema = new Schema({
 
 const packageSchema = new Schema({
   travelerId: {type: String, required: true},
+  orderId: {type: String, required: true},
   items: [itemSchema],
   status: {type: String, default: 'In Transit'},
   createdAt: {type: Date, default: Date.now()}
