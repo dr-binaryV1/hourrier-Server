@@ -396,6 +396,7 @@ exports.acceptPackage = (req, res, next) => {
 exports.sendInvoice = (req, res, next) => {
   const invoice = new Invoice({
     buyerId: req.body.invoice.buyerId,
+    orderId: req.body.invoice.orderId,
     items: req.body.invoice.items,
     fee: req.body.invoice.fee,
     total: req.body.invoice.total,
@@ -427,6 +428,7 @@ exports.sendInvoice = (req, res, next) => {
             if(err) { return next(err); }
 
             order.status = 'invoice sent';
+            order.updatedAt = Date.now();
             order.save((err, order) => {
               if(err) { return next(err); }
 
@@ -443,6 +445,43 @@ exports.sendInvoice = (req, res, next) => {
             });
           });
         });
+      });
+    });
+  });
+};
+
+exports.dismissInvoice = (req, res, next) => {
+  User.findOne({"_id": req.get('userId')}, null, (err, user) => {
+    if(err) { return next(err); }
+
+    Notification.findOne({"invoiceId": req.body.invoiceId}, null, (err, notif) => {
+      if(err) { return next(err); }
+
+      user.notificationIds = user.notificationIds.filter(id => { return id != notif._id});
+      user.save((err, user) => {
+        if(err) { return next(err); }
+
+        const data = {
+          firstname: user.firstname,
+          lastname: user.lastname,
+          username: user.username,
+          mailingAddress1: user.mailingAddress1,
+          mailingAddress2: user.mailingAddress2,
+          mailingCity: user.mailingCity,
+          mailingCountry: user.mailingCountry,
+          mailingZip: user.mailingZip,
+          role: user.role,
+          userTypeId: user.userTypeId,
+          itineraryIds: user.itineraryIds,
+          notificationIds: user.notificationIds,
+          packageIds: user.packageIds,
+          primaryShippingAddress: user.primaryShippingAddress,
+          shippingAddressIds: user.shippingAddressIds,
+          traveler: user.traveler,
+          email: user.email
+        };
+
+        res.json({user: data});
       });
     });
   });
@@ -473,6 +512,24 @@ exports.saveToken = (req, res, next) => {
   }, function(err, charge) {
     if (err) { return next(err); }
 
+    Invoice.findOne({"_id": req.body.invoiceId}, null, (err, invoice) => {
+      if(err) { return next(err); }
+
+      Order.findOne({"_id": invoice.orderId}, null, (err, order) => {
+        if(err) { return next(err); }
+
+        invoice.status = 'paid';
+        order.status = 'invoice paid';
+        order.updatedAt = Date.now();
+        order.save((err, order) => {
+          if(err) { return next(err); }
+        });
+
+        invoice.save((err, invoice) => {
+          if(err) { return next(err); }
+        });
+      });
+    });
     res.json(charge);
   });
 };
