@@ -49,4 +49,5 @@ module.exports = function (app) {
     app.delete('/shipping', requireAuth, User.removeShippingAddress);
     app.delete('/notifications', requireAuth, User.deleteNotification);
     app.delete('/notifications/all', requireAuth, User.deleteAllNotifications);
+    app.delete('/notifications/one/invoice', requireAuth, Order.dismissInvoice);
 }
