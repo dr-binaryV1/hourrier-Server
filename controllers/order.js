@@ -231,10 +231,18 @@ exports.getOneOrder = (req, res, next) => {
             email: user.email
           };
 
-          res.json({items, buyer: data, status: order.status});
+          res.json({items, buyer: data, status: order.status, updatedAt: order.updatedAt});
         });
       });
     });
+  });
+};
+
+exports.getOrdersByBuyerId = (req, res, next) => {
+  Order.find({"buyerId": req.get('user')}, null, (err, orders) => {
+    if(err) { return next(err); }
+
+    res.json(orders);
   });
 };
 
@@ -351,6 +359,7 @@ exports.acceptPackage = (req, res, next) => {
             });
 
             const pkg = new Package({
+              orderId: order._id,
               travelerId: user._id,
               items: notif.items,
               createdAt: Date.now()
@@ -500,6 +509,56 @@ exports.getPackage = (req, res, next) => {
     if(err) { return next(err); }
 
     res.json(pkg);
+  });
+};
+
+exports.packageDelivered = (req, res, next) => {
+  Package.findOne({"_id": req.body.packageId}, null, (err, pkg) => {
+    if(err) { return next(err); }
+
+    pkg.status = 'Package Received';
+    pkg.save((err, pkg) => {
+      if(err) { return next(err); }
+
+      Order.findOne({"_id": pkg.orderId}, null, (err, order) => {
+        if(err) { return next(err); }
+
+        order.status = 'Package Delivered';
+        order.updatedAt = Date.now();
+        order.save((err, order) => {
+          if(err) { return next(err); }
+
+          // Send Mail To Admin
+
+          res.json(pkg);
+        });
+      });
+    });
+  });
+};
+
+exports.deliveredToKnutsford = (req, res, next) => {
+  Package.findOne({"_id": req.body.packageId}, null, (err, pkg) => {
+    if(err) { return next(err); }
+
+    pkg.status = 'Delivered to Knutsford';
+    pkg.save((err, pkg) => {
+      if(err) { return next(err); }
+
+      Order.findOne({"_id": pkg.orderId}, null, (err, order) => {
+        if(err) { return next(err); }
+
+        order.status = 'Delivered to Knutsford - to be Confirmed';
+        order.updatedAt = Date.now();
+        order.save((err, order) => {
+          if(err) { return next(err); }
+
+          // Send Mail to Admin and Knutsford Admin
+
+          res.json(pkg);
+        });
+      });
+    });
   });
 };
 
