@@ -1,6 +1,6 @@
 const config = require('../config');
 const stripe = require('stripe')(config.stripeKey);
-const mail = require('./mailer');
+const mail = require('../services/mailer');
 const OrderModels = require('../models/order');
 const UserModels = require('../models/user');
 const User = UserModels.user;
@@ -533,6 +533,41 @@ exports.packageDelivered = (req, res, next) => {
           res.json(pkg);
         });
       });
+    });
+  });
+};
+
+exports.dismissPackage = (req, res, next) => {
+  User.findOne({"_id": req.get('userId')}, null, (err, user) => {
+    if(err) { return next(err); }
+
+    user.packageIds = user.packageIds.filter(id => {
+      return id != req.body.packageId;
+    });
+    user.save((err, user) => {
+      if(err) { return next(err); }
+
+      const data = {
+        firstname: user.firstname,
+        lastname: user.lastname,
+        username: user.username,
+        mailingAddress1: user.mailingAddress1,
+        mailingAddress2: user.mailingAddress2,
+        mailingCity: user.mailingCity,
+        mailingCountry: user.mailingCountry,
+        mailingZip: user.mailingZip,
+        role: user.role,
+        userTypeId: user.userTypeId,
+        itineraryIds: user.itineraryIds,
+        notificationIds: user.notificationIds,
+        packageIds: user.packageIds,
+        primaryShippingAddress: user.primaryShippingAddress,
+        shippingAddressIds: user.shippingAddressIds,
+        traveler: user.traveler,
+        email: user.email
+      };
+
+      res.json({user: data});
     });
   });
 };
