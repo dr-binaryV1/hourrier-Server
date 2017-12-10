@@ -13,6 +13,7 @@ const Notification = OrderModels.notification;
 const Order = OrderModels.order;
 const Invoice = OrderModels.invoice;
 const Package = OrderModels.package;
+const KnutsfordItem = OrderModels.knutsfordItems;
 
 exports.cart = (req, res, next) => {
   Cart.findOne({"userId": req.get('user')}, null, (err, cart) => {
@@ -559,6 +560,38 @@ exports.deliveredToKnutsford = (req, res, next) => {
         });
       });
     });
+  });
+};
+
+exports.orderPurchased = (req, res, next) => {
+  Order.findOne({"_id": req.body.orderId}, null, (err, order) => {
+    if(err) { return next(err); }
+
+    order.status = 'order purchased';
+    order.updatedAt = Date.now();
+    order.save((err, order) => {
+      if(err) { return next(err); }
+
+      const knutsfordItem = new KnutsfordItem({
+        orderId: order._id,
+        createdAt: Date.now()
+      });
+
+      knutsfordItem.save((err, k_item) => {
+        if(err) { return next(err); }
+
+        // Send Mail to knutsford admin
+        res.json({status: order.status});
+      });
+    })
+  });
+}
+
+exports.getKnutsfordItems = (req, res, next) => {
+  KnutsfordItem.find({}, null, (err, k_items) => {
+    if(err) { return next(err); }
+
+    res.json({orders: k_items});
   });
 };
 
