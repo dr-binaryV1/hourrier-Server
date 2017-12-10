@@ -591,7 +591,11 @@ exports.getKnutsfordItems = (req, res, next) => {
   KnutsfordItem.find({}, null, (err, k_items) => {
     if(err) { return next(err); }
 
-    res.json({orders: k_items});
+    Order.find({"_id": k_items.map(item => { return item.orderId })}, null, (err, orders) => {
+      if(err) { return next(err); }
+
+      res.json({orders});
+    });
   });
 };
 
