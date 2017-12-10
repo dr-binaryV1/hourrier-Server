@@ -21,7 +21,8 @@ const userSchema = new Schema({
     email: { type: String, unique: true, required: true, lowercase: true },
     password: { type: String, required: true },
     createdAt: {type: Date, default: Date.now()}
-});
+},
+{ usePushEach: true });
 
 const shippingSchema = new Schema({
   shippingAddress1: { type: String, required: true },
@@ -29,7 +30,8 @@ const shippingSchema = new Schema({
   shippingCity: { type: String, required: true },
   shippingCountry: { type: String, required: true },
   shippingZip: { type: String, required: true }
-});
+},
+{ usePushEach: true });
 
 const travelerSchema = new Schema({
   userId: { type: String, required: true, unique: true },
@@ -40,7 +42,8 @@ const travelerSchema = new Schema({
   shippingState: { type: String, required: true },
   shippingCountry: { type: String, required: true },
   shippingZip: { type: String, required: true }
-});
+},
+{ usePushEach: true });
 
 const travelItinerarySchema = new Schema({
     departureCity: { type: String, required: true },
@@ -50,7 +53,8 @@ const travelItinerarySchema = new Schema({
     arrivalDate: { type: Date, required: true },
     arrivalTime: { type: String, required: true },
     flightNo: { type: String, required: true }
-});
+},
+{ usePushEach: true });
 
 // On Save Hook, encrypt password
 userSchema.pre('save', function(next) {
