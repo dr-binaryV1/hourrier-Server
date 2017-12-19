@@ -49,6 +49,7 @@ module.exports = function (app) {
     app.put('/orders/purchased', requireAuth, Order.orderPurchased);
     app.put('/orders/package/delivered/knutsford', requireAuth, Order.deliveredToKnutsford);
     app.delete('/orders/delete/one', requireAuth, Order.deleteOrder);
+    app.delete('/orders/package', requireAuth, Order.dismissPackage);
     app.delete('/shoppingcartitem', requireAuth, Order.removeItem);
     app.delete('/itinerary', requireAuth, User.removeTravelItinerary);
     app.delete('/shipping', requireAuth, User.removeShippingAddress);
