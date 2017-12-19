@@ -392,8 +392,12 @@ exports.acceptPackage = (req, res, next) => {
                   traveler: user.traveler,
                   email: user.email
                 };
+                order.packageId = pkg._id;
+                order.save((err, order) => {
+                  if(err) { return next(err); }
 
-                res.json({user: data});
+                  res.json({user: data});
+                });
               });
             });
           });
