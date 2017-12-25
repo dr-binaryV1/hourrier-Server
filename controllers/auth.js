@@ -24,6 +24,7 @@ exports.signup = (req, res, next) => {
   const address1 = req.body.address1;
   const address2 = req.body.address2;
   const city = req.body.city;
+  const role = req.body.role;
   const country = req.body.country;
   const zip = req.body.zip;
   const email = req.body.email;
@@ -52,6 +53,7 @@ exports.signup = (req, res, next) => {
       lastname,
       email,
       password,
+      role,
       mailingAddress1: address1,
       mailingAddress2: address2,
       mailingCity: city,
