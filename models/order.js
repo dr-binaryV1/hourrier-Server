@@ -21,6 +21,7 @@ const orderSchema = new Schema({
   status: {type: String, default: 'pending'},
   travelerId: {type: String},
   packageId: {type: String},
+  processedAt: {type: Date, default: Date.now()},
   createdAt: {type: Date, default: Date.now()},
   updatedAt: {type: Date, default: Date.now()}
 },
