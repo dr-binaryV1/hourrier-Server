@@ -3,26 +3,26 @@ const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt-nodejs');
 
 const userSchema = new Schema({
-    firstname: { type: String, required: true },
-    lastname: { type: String, required: true },
-    username: { type: String, required: true, unique: true },
-    mailingAddress1: { type: String, required: true},
-    mailingAddress2: { type: String },
-    mailingCity: { type: String, required: true },
-    mailingCountry: { type: String, required: true },
-    mailingZip: { type: String, default: "00000"},
-    traveler: { type: Boolean, default: false },
-    role: {type: String, default: 'customer'},
-    itineraryIds: [{type: String}],
-    notificationIds: [{type: String}],
-    packageIds: [{type: String}],
-    shippingAddressIds: [{type: String}],
-    primaryShippingAddress: { type: String },
-    email: { type: String, unique: true, required: true, lowercase: true },
-    password: { type: String, required: true },
-    createdAt: {type: Date, default: Date.now()}
+  firstname: { type: String, required: true },
+  lastname: { type: String, required: true },
+  username: { type: String, required: true, unique: true },
+  mailingAddress1: { type: String, required: true },
+  mailingAddress2: { type: String },
+  mailingCity: { type: String, required: true },
+  mailingCountry: { type: String, required: true },
+  mailingZip: { type: String, default: "00000" },
+  traveler: { type: Boolean, default: false },
+  role: { type: String, default: 'customer' },
+  itineraryIds: [{ type: String }],
+  notificationIds: [{ type: String }],
+  packageIds: [{ type: String }],
+  shippingAddressIds: [{ type: String }],
+  primaryShippingAddress: { type: String },
+  email: { type: String, unique: true, required: true, lowercase: true },
+  password: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now() }
 },
-{ usePushEach: true });
+  { usePushEach: true });
 
 const shippingSchema = new Schema({
   shippingAddress1: { type: String, required: true },
@@ -31,7 +31,7 @@ const shippingSchema = new Schema({
   shippingCountry: { type: String, required: true },
   shippingZip: { type: String, required: true }
 },
-{ usePushEach: true });
+  { usePushEach: true });
 
 const travelerSchema = new Schema({
   userId: { type: String, required: true, unique: true },
@@ -43,43 +43,43 @@ const travelerSchema = new Schema({
   shippingCountry: { type: String, required: true },
   shippingZip: { type: String, required: true }
 },
-{ usePushEach: true });
+  { usePushEach: true });
 
 const travelItinerarySchema = new Schema({
-    departureCity: { type: String, required: true },
-    departureDate: { type: Date, required: true },
-    departureTime: { type: String, required: true },
-    arrivalCity: { type: String, required: true },
-    arrivalDate: { type: Date, required: true },
-    arrivalTime: { type: String, required: true },
-    flightNo: { type: String, required: true }
+  departureCity: { type: String, required: true },
+  departureDate: { type: Date, required: true },
+  departureTime: { type: String, required: true },
+  arrivalCity: { type: String, required: true },
+  arrivalDate: { type: Date, required: true },
+  arrivalTime: { type: String, required: true },
+  flightNo: { type: String, required: true }
 },
-{ usePushEach: true });
+  { usePushEach: true });
 
 // On Save Hook, encrypt password
-userSchema.pre('save', function(next) {
-    if(!this.isModified('password')) {
-        return next();
-    }
-    const user = this;
-    bcrypt.genSalt(10, function (err, salt) {
-        if(err) { return next(err); }
+userSchema.pre('save', function (next) {
+  if (!this.isModified('password')) {
+    return next();
+  }
+  const user = this;
+  bcrypt.genSalt(10, function (err, salt) {
+    if (err) { return next(err); }
 
-        bcrypt.hash(user.password, salt, null, function(err, hash) {
-            if(err) { return next(err); }
+    bcrypt.hash(user.password, salt, null, function (err, hash) {
+      if (err) { return next(err); }
 
-            user.password = hash;
-            next();
-        });
+      user.password = hash;
+      next();
     });
+  });
 });
 
-userSchema.methods.comparePassword = function(candidatePassword, callback) {
-    bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
-        if(err) { return callback(err); }
+userSchema.methods.comparePassword = function (candidatePassword, callback) {
+  bcrypt.compare(candidatePassword, this.password, function (err, isMatch) {
+    if (err) { return callback(err); }
 
-        callback(null, isMatch);
-    });
+    callback(null, isMatch);
+  });
 }
 
 const user_model = mongoose.model('user', userSchema);
