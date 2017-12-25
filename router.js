@@ -5,6 +5,7 @@ const Order = require('./controllers/order');
 const Scraper = require('./controllers/scraper');
 const passportService = require('./services/passport');
 const passport = require('passport');
+const Knutsford = require('./controllers/knutsford');
 
 const UserType = UserModels.userType;
 
@@ -40,6 +41,7 @@ module.exports = function (app) {
     app.post('/orders/one/package', requireAuth, Order.getPackage);
     app.post('/user/notifications', requireAuth, Order.getNotifications);
     app.post('/user/notifications/accept', requireAuth, Order.acceptPackage);
+    app.post('/knutsford/packages', requireAuth, Knutsford.packageData);
     app.post('/save-stripe-token', requireAuth, Order.saveToken);
     app.put('/user', requireAuth, User.updateUser);
     app.put('/user/primaryShippingAddress', requireAuth, User.changePrimaryShipping);
