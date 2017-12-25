@@ -608,6 +608,7 @@ exports.orderPurchased = (req, res, next) => {
 
     order.status = 'order purchased';
     order.updatedAt = Date.now();
+    order.processedAt = Date.now();
     order.save((err, order) => {
       if(err) { return next(err); }
 
