@@ -602,6 +602,26 @@ exports.deliveredToKnutsford = (req, res, next) => {
   });
 };
 
+exports.filterOrder = (req, res, next) => {
+  let matchingOrders = [];
+
+  Order.find({}, null, (err, orders) => {
+    if (err) { return next(err); }
+
+    if (req.body.filterBy === "name") {
+      orders.map(order => {
+        return User.findOne({ "_id": order.buyerId }, null, (err, usr) => {
+          if (err) { return next(err); }
+          if (req.body.keyword.includes(usr.firstname) || req.body.keyword.includes(usr.lastname)) {
+            matchingOrders.push(order);
+          };
+        });
+      });
+      res.json({ orders: matchingOrders });
+    };
+  });
+};
+
 exports.orderPurchased = (req, res, next) => {
   Order.findOne({ "_id": req.body.orderId }, null, (err, order) => {
     if (err) { return next(err); }
@@ -625,7 +645,7 @@ exports.orderPurchased = (req, res, next) => {
       });
     })
   });
-}
+};
 
 exports.saveToken = (req, res, next) => {
   stripe.charges.create({
