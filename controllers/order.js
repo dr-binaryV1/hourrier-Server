@@ -16,8 +16,8 @@ const Package = OrderModels.package;
 const KnutsfordItem = OrderModels.knutsfordItems;
 
 exports.cart = (req, res, next) => {
-  Cart.findOne({"userId": req.get('user')}, null, (err, cart) => {
-    if(err) { return next(err); }
+  Cart.findOne({ "userId": req.get('user') }, null, (err, cart) => {
+    if (err) { return next(err); }
     res.json(cart);
   });
 };
@@ -35,8 +35,8 @@ exports.addItem = (req, res, next) => {
   item.save((err, item) => {
     if (err) { return next(err); }
 
-    Cart.findOne({"userId": req.get('user')}, null, (err, cart) => {
-      if(err) { return next(err); }
+    Cart.findOne({ "userId": req.get('user') }, null, (err, cart) => {
+      if (err) { return next(err); }
 
       cart.itemIds.push(item._id);
       cart.save((err, cart) => {
@@ -48,18 +48,18 @@ exports.addItem = (req, res, next) => {
 };
 
 exports.getItem = (req, res, next) => {
-  Item.find({"_id": req.body.itemIds.map(id => {return id})}, null, (err, items) => {
-    if(err) { return next(err); }
+  Item.find({ "_id": req.body.itemIds.map(id => { return id }) }, null, (err, items) => {
+    if (err) { return next(err); }
     res.json({ items: items });
   });
 };
 
 exports.checkItem = (req, res, next) => {
-  Cart.findOne({"userId": req.get('user')}, null, (err, cartItems) => {
-    if(err) { return next(err); }
+  Cart.findOne({ "userId": req.get('user') }, null, (err, cartItems) => {
+    if (err) { return next(err); }
 
-    Item.find({"_id": cartItems.itemIds.map(id => {return id})}, null, (err, items) => {
-      if(err) { return next(err); }
+    Item.find({ "_id": cartItems.itemIds.map(id => { return id }) }, null, (err, items) => {
+      if (err) { return next(err); }
       let filteredItems = items.filter(item => {
         return item.name === req.body.itemName
       });
@@ -70,36 +70,36 @@ exports.checkItem = (req, res, next) => {
 };
 
 exports.updateItem = (req, res, next) => {
-  Item.findOne({"_id": req.body.newItem._id}, null, (err, item) => {
-    if(err) { return next(err); }
+  Item.findOne({ "_id": req.body.newItem._id }, null, (err, item) => {
+    if (err) { return next(err); }
 
     item.price = req.body.newItem.price;
     item.save((err, item) => {
-      if(err) { return next(err); }
+      if (err) { return next(err); }
 
       Order.find({}, null, (err, orders) => {
-        if(err) { return next(err); }
-        res.json({orders});
+        if (err) { return next(err); }
+        res.json({ orders });
       });
     });
   });
 };
 
 exports.removeItem = (req, res, next) => {
-  Cart.findOne({"userId": req.get('user')}, null, (err, cart) => {
-    if(err) { return next(err); }
+  Cart.findOne({ "userId": req.get('user') }, null, (err, cart) => {
+    if (err) { return next(err); }
 
     cart.itemIds = cart.itemIds.filter((id) => {
       return id !== req.body.itemId;
     });
 
     cart.save((err, cart) => {
-      if(err) { return next(err); }
+      if (err) { return next(err); }
 
-      Item.remove({"_id": req.body.itemId}, (err) => {
-        if(err) { return next(err); }
+      Item.remove({ "_id": req.body.itemId }, (err) => {
+        if (err) { return next(err); }
         Item.find({}, null, (err, items) => {
-          if(err) { return next(err); }
+          if (err) { return next(err); }
           res.json(items);
         });
       });
@@ -113,7 +113,7 @@ exports.checkout = (req, res, next) => {
   });
 
   orderItems.save((err, items) => {
-    if(err) { return next(err); }
+    if (err) { return next(err); }
 
     const order = new Order({
       buyerId: req.get('user'),
@@ -122,15 +122,15 @@ exports.checkout = (req, res, next) => {
     });
 
     order.save((err, order) => {
-      if(err) { return next(err); }
+      if (err) { return next(err); }
 
-      Cart.findOne({"userId": req.get('user')}, null, (err, cart) => {
+      Cart.findOne({ "userId": req.get('user') }, null, (err, cart) => {
         cart.itemIds = [];
         cart.save((err, cart) => {
-          if(err) { return next(err); }
+          if (err) { return next(err); }
 
-          Item.find({"_id": items.itemIds}, null, (err, _items) => {
-            if(err) { return next(err); }
+          Item.find({ "_id": items.itemIds }, null, (err, _items) => {
+            if (err) { return next(err); }
 
             const notif = new Notification({
               subject: 'You have a package request',
@@ -141,22 +141,22 @@ exports.checkout = (req, res, next) => {
             });
 
             notif.save((err, notification) => {
-              if(err) { return next(err); }
+              if (err) { return next(err); }
 
-              Order.findOne({"_id": order._id}, null, (err, order) => {
-                if(err) { return next(err); }
+              Order.findOne({ "_id": order._id }, null, (err, order) => {
+                if (err) { return next(err); }
 
                 order.status = 'locating travelers';
                 order.save((err, order) => {
-                  if(err) { return next(err); }
+                  if (err) { return next(err); }
 
-                  User.find({"traveler": true}, null, (err, users) => {
-                    if(err) { return next(err); }
+                  User.find({ "traveler": true }, null, (err, users) => {
+                    if (err) { return next(err); }
 
                     let availableTravelerCount = 0;
                     users.map(user => {
-                      Itinerary.find({"_id": user.itineraryIds.map(id => { return id })}, null, (err, itineraries) => {
-                        if(err) { return next(err); }
+                      Itinerary.find({ "_id": user.itineraryIds.map(id => { return id }) }, null, (err, itineraries) => {
+                        if (err) { return next(err); }
 
                         const ONE_DAY = 60 * 60 * 1000 * 24;
                         const validItinerary = itineraries.filter(itinerary => {
@@ -170,7 +170,7 @@ exports.checkout = (req, res, next) => {
                           );
                         });
 
-                        if(validItinerary.length > 0) {
+                        if (validItinerary.length > 0) {
                           availableTravelerCount++;
                           user.notificationIds.push(notification._id);
 
@@ -184,7 +184,7 @@ exports.checkout = (req, res, next) => {
                           mail(body);
                         }
                         user.save((err, user) => {
-                          if(err) { return next(err); }
+                          if (err) { return next(err); }
                         });
                       });
                     });
@@ -202,23 +202,23 @@ exports.checkout = (req, res, next) => {
 
 exports.getOrders = (req, res, next) => {
   Order.find({}, null, (err, orders) => {
-    if(err) { return next(err); }
-    res.json({orders});
+    if (err) { return next(err); }
+    res.json({ orders });
   });
 };
 
 exports.getOneOrder = (req, res, next) => {
-  Order.findOne({"_id": req.body.orderId}, null, (err, order) => {
-    if(err) { return next(err); }
+  Order.findOne({ "_id": req.body.orderId }, null, (err, order) => {
+    if (err) { return next(err); }
 
-    OrderItems.findOne({"_id": order.orderItemsId}, null, (err, orderItems) => {
-      if(err) { return next(err); }
+    OrderItems.findOne({ "_id": order.orderItemsId }, null, (err, orderItems) => {
+      if (err) { return next(err); }
 
-      Item.find({"_id": orderItems.itemIds.map(id => { return id })}, null, (err, items) => {
-        if(err) { return next(err); }
+      Item.find({ "_id": orderItems.itemIds.map(id => { return id }) }, null, (err, items) => {
+        if (err) { return next(err); }
 
-        User.findOne({"_id": order.buyerId}, null, (err, user) => {
-          if(err) { return next(err); }
+        User.findOne({ "_id": order.buyerId }, null, (err, user) => {
+          if (err) { return next(err); }
 
           const data = {
             _id: user._id,
@@ -232,7 +232,7 @@ exports.getOneOrder = (req, res, next) => {
             email: user.email
           };
 
-          res.json({items, buyer: data, status: order.status, updatedAt: order.updatedAt});
+          res.json({ items, buyer: data, status: order.status, updatedAt: order.updatedAt });
         });
       });
     });
@@ -240,20 +240,20 @@ exports.getOneOrder = (req, res, next) => {
 };
 
 exports.getOrdersByBuyerId = (req, res, next) => {
-  Order.find({"buyerId": req.get('user')}, null, (err, orders) => {
-    if(err) { return next(err); }
+  Order.find({ "buyerId": req.get('user') }, null, (err, orders) => {
+    if (err) { return next(err); }
 
     res.json(orders);
   });
 };
 
 exports.deleteOrder = (req, res, next) => {
-  Order.remove({"_id": req.body.orderId}, (err) => {
-    if(err) { return next(err); }
+  Order.remove({ "_id": req.body.orderId }, (err) => {
+    if (err) { return next(err); }
 
     Order.find({}, null, (err, orders) => {
-      if(err) { return next(err); }
-      res.json({orders});
+      if (err) { return next(err); }
+      res.json({ orders });
     });
   });
 };
@@ -268,23 +268,23 @@ exports.findTravelers = (req, res, next) => {
   });
 
   notif.save((err, notification) => {
-    if(err) { return next(err); }
+    if (err) { return next(err); }
 
-    Order.findOne({"_id": req.body.orderId}, null, (err, order) => {
-      if(err) { return next(err); }
+    Order.findOne({ "_id": req.body.orderId }, null, (err, order) => {
+      if (err) { return next(err); }
 
       order.status = 'locating travelers';
       order.updatedAt = Date.now();
       order.save((err, order) => {
-        if(err) { return next(err); }
+        if (err) { return next(err); }
 
-        User.find({"traveler": true}, null, (err, users) => {
-          if(err) { return next(err); }
+        User.find({ "traveler": true }, null, (err, users) => {
+          if (err) { return next(err); }
 
           let availableTravelerCount = 0;
           users.map(user => {
-            Itinerary.find({"_id": user.itineraryIds.map(id => { return id })}, null, (err, itineraries) => {
-              if(err) { return next(err); }
+            Itinerary.find({ "_id": user.itineraryIds.map(id => { return id }) }, null, (err, itineraries) => {
+              if (err) { return next(err); }
 
               const ONE_DAY = 60 * 60 * 1000 * 24;
               const validItinerary = itineraries.filter(itinerary => {
@@ -298,7 +298,7 @@ exports.findTravelers = (req, res, next) => {
                 );
               });
 
-              if(validItinerary.length > 0) {
+              if (validItinerary.length > 0) {
                 availableTravelerCount++;
                 user.notificationIds.push(notification._id);
 
@@ -312,11 +312,11 @@ exports.findTravelers = (req, res, next) => {
                 mail(body);
               }
               user.save((err, user) => {
-                if(err) { return next(err); }
+                if (err) { return next(err); }
               });
             });
           });
-          res.json({status: order.status, travelersFound: availableTravelerCount});
+          res.json({ status: order.status, travelersFound: availableTravelerCount });
         });
       });
     });
@@ -324,36 +324,36 @@ exports.findTravelers = (req, res, next) => {
 };
 
 exports.getNotifications = (req, res, next) => {
-  Notification.find({"_id": req.body.notificationsId.map(id => { return id })}, null, (err, notifs) => {
-    if(err) { return next(err); }
+  Notification.find({ "_id": req.body.notificationsId.map(id => { return id }) }, null, (err, notifs) => {
+    if (err) { return next(err); }
 
     const activeNotifications = notifs.filter(notification => {
       return notification.status === 'active'
     });
 
-    res.json({notifications: activeNotifications});
+    res.json({ notifications: activeNotifications });
   });
 };
 
 exports.acceptPackage = (req, res, next) => {
-  Notification.findOne({"_id": req.body.notificationId}, null, (err, notification) => {
-    if(err) { return next(err); }
+  Notification.findOne({ "_id": req.body.notificationId }, null, (err, notification) => {
+    if (err) { return next(err); }
 
     notification.status = 'inactive';
     notification.save((err, notif) => {
-      if(err) { return next(err); }
+      if (err) { return next(err); }
 
-      Order.findOne({"_id": notif.orderId}, null, (err, order) => {
-        if(err) { return next(err); }
+      Order.findOne({ "_id": notif.orderId }, null, (err, order) => {
+        if (err) { return next(err); }
 
         order.status = 'traveler found';
         order.travelerId = req.get('userId');
         order.updatedAt = Date.now();
         order.save((err, order) => {
-          if(err) { return next(err); }
+          if (err) { return next(err); }
 
-          User.findOne({"_id": req.get('userId')}, null, (err, user) => {
-            if(err) { return next(err); }
+          User.findOne({ "_id": req.get('userId') }, null, (err, user) => {
+            if (err) { return next(err); }
 
             user.notificationIds = user.notificationIds.filter(id => {
               return id !== req.body.notificationId
@@ -367,11 +367,11 @@ exports.acceptPackage = (req, res, next) => {
             });
 
             pkg.save((err, pkg) => {
-              if(err) { return next(err); }
+              if (err) { return next(err); }
 
               user.packageIds.push(pkg._id);
               user.save((err, user) => {
-                if(err) { return next(err); }
+                if (err) { return next(err); }
 
                 const data = {
                   firstname: user.firstname,
@@ -394,9 +394,9 @@ exports.acceptPackage = (req, res, next) => {
                 };
                 order.packageId = pkg._id;
                 order.save((err, order) => {
-                  if(err) { return next(err); }
+                  if (err) { return next(err); }
 
-                  res.json({user: data});
+                  res.json({ user: data });
                 });
               });
             });
@@ -418,7 +418,7 @@ exports.sendInvoice = (req, res, next) => {
   });
 
   invoice.save((err, invoice) => {
-    if(err) { return next(err); }
+    if (err) { return next(err); }
 
     const notif = new Notification({
       invoiceId: invoice._id,
@@ -429,22 +429,22 @@ exports.sendInvoice = (req, res, next) => {
     });
 
     notif.save((err, notification) => {
-      if(err) { return next(err); }
+      if (err) { return next(err); }
 
-      User.findOne({"_id": req.body.invoice.buyerId}, null, (err, user) => {
-        if(err) { return next(err); }
+      User.findOne({ "_id": req.body.invoice.buyerId }, null, (err, user) => {
+        if (err) { return next(err); }
 
         user.notificationIds.push(notification._id);
         user.save((err, user) => {
-          if(err) { return next(err); }
+          if (err) { return next(err); }
 
-          Order.findOne({"_id": req.body.invoice.orderId}, null, (err, order) => {
-            if(err) { return next(err); }
+          Order.findOne({ "_id": req.body.invoice.orderId }, null, (err, order) => {
+            if (err) { return next(err); }
 
             order.status = 'invoice sent';
             order.updatedAt = Date.now();
             order.save((err, order) => {
-              if(err) { return next(err); }
+              if (err) { return next(err); }
 
               const body = {
                 from: '"Hourrier Team" <info.hourrier@gmail.com>', // sender address
@@ -455,7 +455,7 @@ exports.sendInvoice = (req, res, next) => {
 
               mail(body);
 
-              res.json({status: order.status});
+              res.json({ status: order.status });
             });
           });
         });
@@ -465,15 +465,15 @@ exports.sendInvoice = (req, res, next) => {
 };
 
 exports.dismissInvoice = (req, res, next) => {
-  User.findOne({"_id": req.get('userId')}, null, (err, user) => {
-    if(err) { return next(err); }
+  User.findOne({ "_id": req.get('userId') }, null, (err, user) => {
+    if (err) { return next(err); }
 
-    Notification.findOne({"invoiceId": req.body.invoiceId}, null, (err, notif) => {
-      if(err) { return next(err); }
+    Notification.findOne({ "invoiceId": req.body.invoiceId }, null, (err, notif) => {
+      if (err) { return next(err); }
 
-      user.notificationIds = user.notificationIds.filter(id => { return id != notif._id});
+      user.notificationIds = user.notificationIds.filter(id => { return id != notif._id });
       user.save((err, user) => {
-        if(err) { return next(err); }
+        if (err) { return next(err); }
 
         const data = {
           firstname: user.firstname,
@@ -495,43 +495,43 @@ exports.dismissInvoice = (req, res, next) => {
           email: user.email
         };
 
-        res.json({user: data});
+        res.json({ user: data });
       });
     });
   });
 };
 
 exports.getInvoice = (req, res, next) => {
-  Invoice.findOne({"_id": req.body.invoiceId}, null, (err, invoice) => {
-    if(err) { return next(err); }
+  Invoice.findOne({ "_id": req.body.invoiceId }, null, (err, invoice) => {
+    if (err) { return next(err); }
 
     res.json(invoice);
   });
 };
 
 exports.getPackage = (req, res, next) => {
-  Package.findOne({"_id": req.body.packageId}, null, (err, pkg) => {
-    if(err) { return next(err); }
+  Package.findOne({ "_id": req.body.packageId }, null, (err, pkg) => {
+    if (err) { return next(err); }
 
     res.json(pkg);
   });
 };
 
 exports.packageDelivered = (req, res, next) => {
-  Package.findOne({"_id": req.body.packageId}, null, (err, pkg) => {
-    if(err) { return next(err); }
+  Package.findOne({ "_id": req.body.packageId }, null, (err, pkg) => {
+    if (err) { return next(err); }
 
     pkg.status = 'Package Received';
     pkg.save((err, pkg) => {
-      if(err) { return next(err); }
+      if (err) { return next(err); }
 
-      Order.findOne({"_id": pkg.orderId}, null, (err, order) => {
-        if(err) { return next(err); }
+      Order.findOne({ "_id": pkg.orderId }, null, (err, order) => {
+        if (err) { return next(err); }
 
         order.status = 'Package Delivered';
         order.updatedAt = Date.now();
         order.save((err, order) => {
-          if(err) { return next(err); }
+          if (err) { return next(err); }
 
           // Send Mail To Admin
 
@@ -543,14 +543,14 @@ exports.packageDelivered = (req, res, next) => {
 };
 
 exports.dismissPackage = (req, res, next) => {
-  User.findOne({"_id": req.get('userId')}, null, (err, user) => {
-    if(err) { return next(err); }
+  User.findOne({ "_id": req.get('userId') }, null, (err, user) => {
+    if (err) { return next(err); }
 
     user.packageIds = user.packageIds.filter(id => {
       return id != req.body.packageId;
     });
     user.save((err, user) => {
-      if(err) { return next(err); }
+      if (err) { return next(err); }
 
       const data = {
         firstname: user.firstname,
@@ -572,26 +572,26 @@ exports.dismissPackage = (req, res, next) => {
         email: user.email
       };
 
-      res.json({user: data});
+      res.json({ user: data });
     });
   });
 };
 
 exports.deliveredToKnutsford = (req, res, next) => {
-  Package.findOne({"_id": req.body.packageId}, null, (err, pkg) => {
-    if(err) { return next(err); }
+  Package.findOne({ "_id": req.body.packageId }, null, (err, pkg) => {
+    if (err) { return next(err); }
 
     pkg.status = 'Delivered to Knutsford';
     pkg.save((err, pkg) => {
-      if(err) { return next(err); }
+      if (err) { return next(err); }
 
-      Order.findOne({"_id": pkg.orderId}, null, (err, order) => {
-        if(err) { return next(err); }
+      Order.findOne({ "_id": pkg.orderId }, null, (err, order) => {
+        if (err) { return next(err); }
 
         order.status = 'Delivered to Knutsford - to be Confirmed';
         order.updatedAt = Date.now();
         order.save((err, order) => {
-          if(err) { return next(err); }
+          if (err) { return next(err); }
 
           // Send Mail to Admin and Knutsford Admin
 
@@ -603,14 +603,14 @@ exports.deliveredToKnutsford = (req, res, next) => {
 };
 
 exports.orderPurchased = (req, res, next) => {
-  Order.findOne({"_id": req.body.orderId}, null, (err, order) => {
-    if(err) { return next(err); }
+  Order.findOne({ "_id": req.body.orderId }, null, (err, order) => {
+    if (err) { return next(err); }
 
     order.status = 'order purchased';
     order.updatedAt = Date.now();
     order.processedAt = Date.now();
     order.save((err, order) => {
-      if(err) { return next(err); }
+      if (err) { return next(err); }
 
       const knutsfordItem = new KnutsfordItem({
         orderId: order._id,
@@ -618,26 +618,14 @@ exports.orderPurchased = (req, res, next) => {
       });
 
       knutsfordItem.save((err, k_item) => {
-        if(err) { return next(err); }
+        if (err) { return next(err); }
 
         // Send Mail to knutsford admin
-        res.json({status: order.status});
+        res.json({ status: order.status });
       });
     })
   });
 }
-
-exports.getKnutsfordItems = (req, res, next) => {
-  KnutsfordItem.find({}, null, (err, k_items) => {
-    if(err) { return next(err); }
-
-    Order.find({"_id": k_items.map(item => { return item.orderId })}, null, (err, orders) => {
-      if(err) { return next(err); }
-
-      res.json({orders});
-    });
-  });
-};
 
 exports.saveToken = (req, res, next) => {
   stripe.charges.create({
@@ -645,24 +633,24 @@ exports.saveToken = (req, res, next) => {
     currency: "usd",
     source: req.body.token.id, // obtained with Stripe.js
     description: "Test Charge"
-  }, function(err, charge) {
+  }, function (err, charge) {
     if (err) { return next(err); }
 
-    Invoice.findOne({"_id": req.body.invoiceId}, null, (err, invoice) => {
-      if(err) { return next(err); }
+    Invoice.findOne({ "_id": req.body.invoiceId }, null, (err, invoice) => {
+      if (err) { return next(err); }
 
-      Order.findOne({"_id": invoice.orderId}, null, (err, order) => {
-        if(err) { return next(err); }
+      Order.findOne({ "_id": invoice.orderId }, null, (err, order) => {
+        if (err) { return next(err); }
 
         invoice.status = 'paid';
         order.status = 'invoice paid';
         order.updatedAt = Date.now();
         order.save((err, order) => {
-          if(err) { return next(err); }
+          if (err) { return next(err); }
         });
 
         invoice.save((err, invoice) => {
-          if(err) { return next(err); }
+          if (err) { return next(err); }
         });
       });
     });
