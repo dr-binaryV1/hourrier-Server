@@ -21,7 +21,7 @@ module.exports = function (app) {
     app.get('/user', requireAuth, User.getUser);
     app.get('/orders', requireAuth, Order.getOrders);
     app.get('/orders/buyer/id', requireAuth, Order.getOrdersByBuyerId);
-    app.get('/orders/knutsford', requireAuth, Order.getKnutsfordItems);
+    app.get('/orders/knutsford', requireAuth, Knutsford.getKnutsfordItems);
     app.post('/shoppingcart', requireAuth, Order.addItem);
     app.post('/shoppingcart/check', requireAuth, Order.checkItem);
     app.post('/shoppingcartitem', requireAuth, Order.getItem);
