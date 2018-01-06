@@ -3,8 +3,10 @@ const stripe = require('stripe')(config.stripeKey);
 const mail = require('../services/mailer');
 const OrderModels = require('../models/order');
 const UserModels = require('../models/user');
+const moment = require('moment');
 const User = UserModels.user;
 const Itinerary = UserModels.travelItinerary;
+const Shipping = UserModels.shipping;
 const Cart = OrderModels.cart;
 const Item = OrderModels.item;
 const Product = OrderModels.item;
@@ -220,7 +222,7 @@ exports.getOneOrder = (req, res, next) => {
         User.findOne({ "_id": order.buyerId }, null, (err, user) => {
           if (err) { return next(err); }
 
-          const data = {
+          var buyer = {
             _id: user._id,
             firstname: user.firstname,
             lastname: user.lastname,
@@ -232,7 +234,30 @@ exports.getOneOrder = (req, res, next) => {
             email: user.email
           };
 
-          res.json({ items, buyer: data, status: order.status, updatedAt: order.updatedAt });
+          if (order.travelerId !== null) {
+            User.findOne({ "_id": order.travelerId }, null, (err, user) => {
+              if (err) { return next(err); }
+
+              const traveler = {
+                _id: user._id,
+                firstname: user.firstname,
+                lastname: user.lastname,
+                email: user.email
+              };
+
+              Itinerary.find({ "_id": user.itineraryIds.map(itinerary => { return itinerary }) }, null, (err, itinerary) => {
+                if (err) { return next(err); }
+
+                Shipping.findOne({ "_id": user.primaryShippingAddress }, null, (err, shipping) => {
+                  if (err) { return next(err); }
+
+                  res.json({ items, buyer, traveler, status: order.status, updatedAt: order.updatedAt, itinerary, shipping });
+                });
+              });
+            });
+          } else {
+            res.json({ items, buyer, status: order.status, updatedAt: order.updatedAt });
+          };
         });
       });
     });
@@ -604,18 +629,113 @@ exports.deliveredToKnutsford = (req, res, next) => {
 
 exports.filterOrder = (req, res, next) => {
   if (req.body.filterBy === "name") {
-    User.find({}, null, (err, users) => {
-      if (err) { return next(err); }
-
-      const matchedUser = users.filter((user) => {
-        return req.body.keyword.includes(user.firstname) || req.body.keyword.includes(user.lastname);
-      });
-
-      Order.find({ "buyerId": matchedUser.map(usr => { return usr._id }) }, null, (err, orders) => {
+    if (req.body.keyword === "") {
+      Order.find({}, null, (err, orders) => {
         if (err) { return next(err); }
 
-        res.json({ "orders": orders });
+        res.json({ orders });
       });
+    } else {
+      User.find({}, null, (err, users) => {
+        if (err) { return next(err); }
+
+        const matchedUser = users.filter((user) => {
+          return req.body.keyword.includes(user.firstname) || req.body.keyword.includes(user.lastname);
+        });
+
+        Order.find({ "buyerId": matchedUser.map(usr => { return usr._id }) }, null, (err, orders) => {
+          if (err) { return next(err); }
+
+          res.json({ orders });
+        });
+      });
+    };
+  };
+
+  if (req.body.filterBy === "location") {
+    Itinerary.find({ "arrivalCity": req.body.keyword }, null, (err, itineraries) => {
+      if (err) { return next(err); }
+
+      if (itineraries.length > 0) {
+        User.find({ "itineraryIds": itineraries.map(itinerary => { return [itinerary._id] }) }, null, (err, users) => {
+          if (err) { return next(err); }
+
+          Order.find({ "buyerId": users.map(user => { return user._id }) }, null, (err, orders) => {
+            if (err) { return next(err); }
+
+            res.json({ orders });
+          });
+        });
+      } else {
+        res.json({ orders: [] });
+      }
+    });
+  };
+
+  if (req.body.filterBy === "time") {
+    Itinerary.find({}, null, (err, itineraries) => {
+      if (err) { return next(err); }
+
+      if (itineraries.length > 0) {
+        let matchedItineraries;
+        const reference = moment(Date.now());
+
+        if (req.body.keyword === "Today") {
+          matchedItineraries = itineraries.map(itinerary => {
+            const arrivalTime = moment(itinerary.arrivalDate);
+            const today = reference.clone().startOf('day');
+
+            if (arrivalTime.isSame(today, 'd')) {
+              return itinerary;
+            };
+          });
+        } else if (req.body.keyword === "Tomorrow") {
+          matchedItineraries = itineraries.map(itinerary => {
+            const arrivalTime = moment(itinerary.arrivalDate);
+            const tomorrow = reference.clone().add(1, 'days').startOf('day');
+
+            if (arrivalTime.isSame(tomorrow, 'd')) {
+              return itinerary;
+            };
+          });
+        } else if (req.body.keyword === "3 Days") {
+          matchedItineraries = itineraries.map(itinerary => {
+            const arrivalTime = moment(itinerary.arrivalDate);
+            const fourDays = reference.clone().add(4, 'days').startOf('day');
+
+            if (arrivalTime.isBefore(fourDays)) {
+              return itinerary;
+            };
+          });
+        } else if (req.body.keyword === "5 Days") {
+          matchedItineraries = itineraries.map(itinerary => {
+            const arrivalTime = moment(itinerary.arrivalDate);
+            const sixDays = reference.clone().add(6, 'days').startOf('day');
+
+            if (arrivalTime.isBefore(sixDays)) {
+              return itinerary;
+            };
+          });
+        };
+
+        if (matchedItineraries.length > 0) {
+          User.find({
+            "itineraryIds": matchedItineraries.map(itinerary => {
+              if (typeof itinerary !== "undefined") return [itinerary._id]
+            })
+          }, null, (err, users) => {
+            if (err) { return next(err); }
+
+            Order.find({ "travelerId": users.map(user => { return user._id }) }, null, (err, orders) => {
+              if (err) { return next(err); }
+
+              res.json({ orders });
+            });
+          });
+        } else {
+          res.json({ orders: [] });
+        };
+      };
     });
   };
 };
