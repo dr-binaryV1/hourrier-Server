@@ -603,23 +603,21 @@ exports.deliveredToKnutsford = (req, res, next) => {
 };
 
 exports.filterOrder = (req, res, next) => {
-  let matchingOrders = [];
+  if (req.body.filterBy === "name") {
+    User.find({}, null, (err, users) => {
+      if (err) { return next(err); }
 
-  Order.find({}, null, (err, orders) => {
-    if (err) { return next(err); }
-
-    if (req.body.filterBy === "name") {
-      orders.map(order => {
-        return User.findOne({ "_id": order.buyerId }, null, (err, usr) => {
-          if (err) { return next(err); }
-          if (req.body.keyword.includes(usr.firstname) || req.body.keyword.includes(usr.lastname)) {
-            matchingOrders.push(order);
-          };
-        });
+      const matchedUser = users.filter((user) => {
+        return req.body.keyword.includes(user.firstname) || req.body.keyword.includes(user.lastname);
       });
-      res.json({ orders: matchingOrders });
-    };
-  });
+
+      Order.find({ "buyerId": matchedUser.map(usr => { return usr._id }) }, null, (err, orders) => {
+        if (err) { return next(err); }
+
+        res.json({ "orders": orders });
+      });
+    });
+  };
 };
 
 exports.orderPurchased = (req, res, next) => {
