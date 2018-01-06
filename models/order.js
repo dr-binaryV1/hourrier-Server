@@ -18,8 +18,9 @@ const orderItemsSchema = new Schema({
 const orderSchema = new Schema({
   buyerId: {type: String, required: true},
   orderItemsId: {type: String, required: true, unique: true},
+  deliveryLocation: {type: String, required: true},
   status: {type: String, default: 'pending'},
-  travelerId: {type: String},
+  travelerId: {type: String, default: null},
   packageId: {type: String},
   processedAt: {type: Date, default: Date.now()},
   createdAt: {type: Date, default: Date.now()},
