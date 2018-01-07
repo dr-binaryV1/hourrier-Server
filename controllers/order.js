@@ -111,7 +111,7 @@ exports.removeItem = (req, res, next) => {
 
 exports.checkout = (req, res, next) => {
   const orderItems = new OrderItems({
-    itemIds: req.body.itemIds
+    itemIds: req.body.order.itemIds
   });
 
   orderItems.save((err, items) => {
@@ -120,12 +120,12 @@ exports.checkout = (req, res, next) => {
     const order = new Order({
       buyerId: req.get('user'),
       orderItemsId: items._id,
+      deliveryLocation: req.body.order.location,
       createdAt: Date.now()
     });
 
     order.save((err, order) => {
       if (err) { return next(err); }
-
       Cart.findOne({ "userId": req.get('user') }, null, (err, cart) => {
         cart.itemIds = [];
         cart.save((err, cart) => {
