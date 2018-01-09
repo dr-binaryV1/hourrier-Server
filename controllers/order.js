@@ -162,10 +162,10 @@ exports.checkout = (req, res, next) => {
 
                         const ONE_DAY = 60 * 60 * 1000 * 24;
                         const validItinerary = itineraries.filter(itinerary => {
-                          const departureDate = new Date(itinerary.departureDate);
+                          const arrivalDate = new Date(itinerary.arrivalDate);
                           return (
-                            departureDate - Date.now() >= (ONE_DAY * 3) &&
-                            departureDate - Date.now() <= (ONE_DAY * 7) &&
+                            arrivalDate - Date.now() >= (ONE_DAY * 3) &&
+                            arrivalDate - Date.now() <= (ONE_DAY * 7) &&
                             order.buyerId != user._id &&
                             user.shippingAddressIds.length > 0 &&
                             user.primaryShippingAddress !== ''
