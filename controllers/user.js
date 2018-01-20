@@ -28,7 +28,6 @@ exports.getUser = (req, res, next) => {
       mailingAddress2: user.mailingAddress2,
       mailingCity: user.mailingCity,
       mailingCountry: user.mailingCountry,
-      mailingZip: user.mailingZip,
       userTypeId: user.userTypeId,
       itineraryIds: user.itineraryIds,
       role: user.role,
@@ -49,7 +48,6 @@ exports.addShipping = (req, res, next) => {
     shippingAddress2: req.body.shippingAddress2,
     shippingCity: req.body.shippingCity,
     shippingCountry: req.body.shippingCountry,
-    shippingZip: req.body.shippingZip
   });
 
   shipping.save((err, shipping) => {
@@ -73,7 +71,6 @@ exports.addShipping = (req, res, next) => {
           mailingAddress2: user.mailingAddress2,
           mailingCity: user.mailingCity,
           mailingCountry: user.mailingCountry,
-          mailingZip: user.mailingZip,
           userTypeId: user.userTypeId,
           traveler: user.traveler,
           role: user.role,
@@ -124,7 +121,6 @@ exports.addItinerary = (req, res, next) => {
           mailingAddress2: user.mailingAddress2,
           mailingCity: user.mailingCity,
           mailingCountry: user.mailingCountry,
-          mailingZip: user.mailingZip,
           userTypeId: user.userTypeId,
           traveler: user.traveler,
           role: user.role,
@@ -241,7 +237,6 @@ exports.updateUser = (req, res, next) => {
     user.mailingAddress2 = req.body.mailingAddress2;
     user.mailingCity = req.body.mailingCity;
     user.mailingCountry = req.body.mailingCountry;
-    user.mailingZip = req.body.mailingZip;
 
     user.save((err, user) => {
       if(err) { return next(err); }
@@ -254,7 +249,6 @@ exports.updateUser = (req, res, next) => {
         mailingAddress2: user.mailingAddress2,
         mailingCity: user.mailingCity,
         mailingCountry: user.mailingCountry,
-        mailingZip: user.mailingZip,
         userTypeId: user.userTypeId,
         itineraryIds: user.itineraryIds,
         role: user.role,
