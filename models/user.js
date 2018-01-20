@@ -10,7 +10,6 @@ const userSchema = new Schema({
   mailingAddress2: { type: String },
   mailingCity: { type: String, required: true },
   mailingCountry: { type: String, required: true },
-  mailingZip: { type: String, default: "00000" },
   traveler: { type: Boolean, default: false },
   role: { type: String, default: 'customer' },
   itineraryIds: [{ type: String }],
