@@ -48,6 +48,7 @@ exports.addShipping = (req, res, next) => {
     shippingAddress2: req.body.shippingAddress2,
     shippingCity: req.body.shippingCity,
     shippingCountry: req.body.shippingCountry,
+    shippingZip: req.body.shippingZip
   });
 
   shipping.save((err, shipping) => {
