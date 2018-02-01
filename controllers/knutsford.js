@@ -1,10 +1,12 @@
 const OrderModels = require('../models/order');
 const UserModels = require('../models/user');
+const KnutsfordItem = require('../models/order').knutsfordItems;
 
 const User = UserModels.user;
 const Itinerary = UserModels.travelItinerary;
 const Package = OrderModels.package;
 const Items = OrderModels.item;
+const Order = OrderModels.order;
 
 exports.getKnutsfordItems = (req, res, next) => {
   KnutsfordItem.find({}, null, (err, k_items) => {
